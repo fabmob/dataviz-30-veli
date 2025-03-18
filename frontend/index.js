@@ -680,7 +680,7 @@ const Footer = () => {
         <footer className="footer">
             <div className="content has-text-centered">
                 <p>
-                    Un site proposé en open source par <a href="https://lafabriquedesmobilites.fr/">la Fabrique des Mobilités</a>.
+                    Un site proposé en <a href="https://github.com/fabmob/dataviz-30-veli">open source</a> par <a href="https://lafabriquedesmobilites.fr/">la Fabrique des Mobilités</a>.
                 </p>
             </div>
         </footer>
