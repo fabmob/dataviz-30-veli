@@ -1,0 +1,4 @@
+node_modules/
+*.db
+heatmap.json
+package-lock.json
