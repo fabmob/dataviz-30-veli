@@ -134,7 +134,7 @@ const distancesMatch = [
 
 const permisMatch = [
     "1=1",
-    "Model not in ('WEEZ', 'BIRO')"
+    "Model not in ('WEEZ')"
 ]
 app.get('/api/experiences', (req, res) => {
     const stmt = db.prepare(`
