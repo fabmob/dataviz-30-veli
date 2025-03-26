@@ -6,8 +6,8 @@ const path = require('path')
 const h3 = require("h3-js")
 
 const port = process.env.PORT || 8081;
-const db = new Database('data.db', {verbose: console.log})
-const db_edits = new Database('data_edits.db', {verbose: console.log})
+const db = new Database('data.db')
+const db_edits = new Database('data_edits.db')
 const app = express()
 app.use(express.json())
 app.use(cors())
@@ -108,6 +108,66 @@ app.get('/api/tripsInBbox', (req, res) => {
     }
     res.json(rows)
 })
+const modelTypeMap = {
+    "BIRO": "Passif",
+    "WEEZ": "Passif",
+    "Karbikes": "Actif",
+    "Frikar": "Actif",
+    "Urbaner": "Actif",
+    "Formidable": "Actif",
+    "Woodybus": "Actif",
+    "Cyclospace": "Actif",
+}
+const fetchStats = (location) => {
+    let rows
+    if (location) {
+        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and location = ? group by Model").all(location)
+    } else {
+        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL group by Model").all()
+    }
+    let res = {
+        models: {},
+        actifs: {
+            totalDistanceKm: 0,
+            nbTrips: 0
+        },
+        passifs: {
+            totalDistanceKm: 0,
+            nbTrips: 0
+        },
+        firstTrip: "3000-31-12",
+        lastTrip: "0000-01-01"
+    }
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        res.models[row.Model] = {
+            totalDistanceKm: row.totalDistanceKm,
+            nbTrips: row.nbTrips,
+            type: modelTypeMap[row.Model]
+        }
+        if (modelTypeMap[row.Model] === "Actif") {
+            res.actifs.totalDistanceKm += row.totalDistanceKm
+            res.actifs.nbTrips += row.nbTrips
+        } else {
+            res.passifs.totalDistanceKm += row.totalDistanceKm
+            res.passifs.nbTrips += row.nbTrips
+        }
+        if (row.firstTrip < res.firstTrip) {
+            res.firstTrip = row.firstTrip
+        }
+        if (row.lastTrip > res.lastTrip) {
+            res.lastTrip = row.lastTrip
+        }
+    }
+    return res
+}
+
+
+app.get('/api/stats/:location?', (req, res) => {
+    res.json(fetchStats(req.params.location))
+})
+
+
 
 // const motifs = ["pour toutes raisons", "pour me rendre au travail", "pour mon travail", "pour mes loisirs", "pour faire mes courses", "pour mes enfants/famille", "pour aller chez le médecin"]
 //     const distances = ["toutes distances", "moins de 2 km", "entre 2 et 5 km", "entre 5 et 10 km", "entre 10 et 20 km", "plus de 20 km"]
