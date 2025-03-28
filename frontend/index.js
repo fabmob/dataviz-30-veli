@@ -57,21 +57,22 @@ const pieColors = {
     "Très positif": "rgb(72, 199, 142)",
     "Positif": "rgb(66, 88, 255)",
     "Négatif": "rgb(255, 183, 15)",
-    "Très négatif": "rgb(255, 102, 133)"
+    "Très négatif": "rgb(255, 102, 133)",
+    "Trajets sans bilan": "rgb(170, 170, 170)"
 }
 const PieChart = ({ data, label }) => {
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
     useEffect(() => {
         if (chartRef.current) {
-          const ctx = chartRef.current.getContext('2d');
-
+          const ctx = chartRef.current.getContext('2d')
+          let sortedEntries = Object.keys(pieColors).map(bilan => data[bilan] ? [bilan, data[bilan]] : null).filter(e => e)
           const chartData = {
-            labels: Object.keys(data),
+            labels: sortedEntries.map(([key, value]) => `${key} (${value})`),
             datasets: [{
               label: label || '',
-              data: Object.values(data),
-              backgroundColor: Object.keys(data).map(key => pieColors[key]),
+              data: sortedEntries.map(([key, value]) => value),
+              backgroundColor: sortedEntries.map(([key, value]) => pieColors[key])
             }]
           };
           if (chartInstanceRef.current) {
@@ -193,7 +194,7 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
 
     return (
         <div>
-        <div ref={mapContainerRef} id="map" style={{height: "500px"}}></div> 
+            <div ref={mapContainerRef} id="map" style={{height: "500px"}}></div> 
             <div>Légende des expériences: 🤩 Très positive, 🙂 Positive, 🤕 Négative, 😡 Très négative</div>
         </div>
     )
@@ -501,10 +502,11 @@ const Home = () => {
         setTab("carnets")
     }
     for (let i = 0; i < stats.length; i++) {
-        const bilanData = stats[i].carnetEntries.reduce((acc, carnetEntry) => {
+        let bilanData = stats[i].carnetEntries.reduce((acc, carnetEntry) => {
             acc[carnetEntry.bilan] = (acc[carnetEntry.bilan] || 0) + 1
             return acc
         }, {})
+        bilanData["Trajets sans bilan"] = stats[i].nbTrips - stats[i].carnetEntries.length
         stats[i].bilanData = bilanData
     }
     return (
@@ -556,7 +558,7 @@ const Home = () => {
                                                 </div>
                                             </div>
 
-                                            <PieChart data={stat.bilanData} label="Nombre de réponses" />
+                                            <PieChart data={stat.bilanData} label="Nombre" />
                                         </div>
                                     </div>
                                 </div>
@@ -656,7 +658,7 @@ const Profile = () => {
                                                 </div>
                                             </div>
 
-                                            <PieChart data={experiences[model].bilanData} label="Nombre de réponses" />
+                                            <PieChart data={experiences[model].bilanData} label="Nombre" />
 
                                             {experiences[model].carnetEntries.slice(0, 5).map(carnetEntry => <div className="box is-clickable" key={carnetEntry.carnetEntryIndex} onClick={() => selectCarnet(carnetEntry)}>
                                                 <article className="media">
