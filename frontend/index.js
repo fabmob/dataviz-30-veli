@@ -177,7 +177,7 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
                             break
                     }
                     L.marker([carnetCoord.lat, carnetCoord.lon], {icon: icon})
-                        .bindTooltip(`${carnetCoord.carnetEntryIndex}<br/>${carnetCoord.vehicule}<br/>${carnetCoord.bilan}`)
+                        .bindTooltip(`<b>${carnetCoord.vehicule}</b><br/>${icon.options.html} ${carnetCoord.bilan}`)
                         .addTo(map)
                         .on('click', function(e) {
                             onMarkerClick(carnetCoord.carnetEntryIndex)
@@ -204,9 +204,7 @@ const MarkerMap = ({geoJSON, markerLat, markerLon, tooltip}) => {
     const mapContainerRef = useRef(null)
     const map = useRef(null)
     useEffect(() => {
-        console.log("effect markermap")
         if (!map.current) {
-            console.log("creating map")
             const sombre = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
                 attribution:'Fond de carte: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
             })
@@ -235,7 +233,6 @@ const MarkerMap = ({geoJSON, markerLat, markerLon, tooltip}) => {
             initializedMap._layerControl = layerControl
             if (markerLat) L.marker([markerLat, markerLon]).bindTooltip(tooltip).addTo(initializedMap)
             if (geoJSON) {
-                console.log(geoJSON)
                 L.geoJSON(geoJSON).addTo(initializedMap)
             }
             map.current = initializedMap
