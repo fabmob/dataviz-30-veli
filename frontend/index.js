@@ -192,7 +192,10 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
     }, [map])
 
     return (
+        <div>
         <div ref={mapContainerRef} id="map" style={{height: "500px"}}></div> 
+            <div>Légende des expériences: 🤩 Très positive, 🙂 Positive, 🤕 Négative, 😡 Très négative</div>
+        </div>
     )
 }
 
