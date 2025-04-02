@@ -1,7 +1,10 @@
 const { BrowserRouter, Route, Switch, Link, useParams, useHistory } = ReactRouterDOM
-const { useEffect, useRef, useState } = React
+const { useEffect, useRef, useState, useContext } = React
+
+const SettingsContext = React.createContext(null)
 
 const modelPicturesMap = {
+    "Tous": "",
     "BIRO": "https://wikixd.fabmob.io/images/fabmob/f/f6/NeedToRemoveBG_1-03148.png",
     "Cyclospace": "https://wikixd.fabmob.io/images/fabmob/4/45/Cyclospace.jpg",
     "Formidable": "https://galiancycles.com/cdn/shop/files/GALIAN_2024_LeFormidable_Configurateur_4-transparent.png",
@@ -14,6 +17,54 @@ const modelPicturesMap = {
     "Citroen_AMI": "https://wikixd.fabmob.io/images/fabmob/d/dc/AMI1.png"
 }
 
+const locations = [
+    "Tous",
+    "CC 7 Vallées",
+    "CC Clunisois",
+    "CC Grand Pic St Loup",
+    "Commune de Tressin",
+    "Commune des Mureaux",
+    "Commune du Teil",
+    "PNR Grand Causses",
+    "Lalouvesc",
+    "Loos en Gohelle"
+]
+
+const SettingsModal = () => {
+    const { settings, setSettings } = useContext(SettingsContext)
+    if (window.location.search.includes("embed=true")) {
+        return null
+    }
+    return (
+        <div className={`modal ${settings.show ? "is-active" : ""}`} style={{zIndex: 1000}}>
+            <div className="modal-background" onClick={() => setSettings({...settings, show: false})}></div>
+            <div className="modal-card">
+                <header className="modal-card-head">
+                    <p className="modal-card-title">Paramètres</p>
+                    <button className="delete" onClick={() => setSettings({...settings, show: false})}></button>
+                </header>
+                <section className="modal-card-body">
+                    <div className="field">
+                        <label className="label">Territoire</label>
+                        <div className="select">
+                            <select value={settings.location} onChange={(e) => setSettings({...settings, location: e.target.value})}>
+                                {locations.map((location, index) => <option key={index} value={location}>{location}</option>)}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="field">
+                        <label className="label">VELI</label>
+                        <div className="select">
+                            <select value={settings.model} onChange={(e) => setSettings({...settings, model: e.target.value})}>
+                                {Object.keys(modelPicturesMap).map((model, index) => <option key={index} value={model}>{model}</option>)}
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    )
+}
 
 const NavBar = () => {
     const [showMobileNavBar, setShowMobileNavBar] = useState(false)
@@ -38,16 +89,16 @@ const NavBar = () => {
 
             <div id="navbarBasicExample" className={"navbar-menu " + (showMobileNavBar ? "is-active" : "")}>
                 <div className="navbar-start">
-                <Link className="navbar-item" to="/">
-                    Vue d'ensemble
-                </Link>
-                <Link to="/profile" className="navbar-item">
-                    Filtre par profil usager
-                </Link>
-                <Link to="/stats" className="navbar-item">
-                    Statistiques
-                </Link>
-                </div> 
+                    <Link className="navbar-item" to="/">
+                        Vue d'ensemble
+                    </Link>
+                    <Link to="/profile" className="navbar-item">
+                        Filtre par profil usager
+                    </Link>
+                    <Link to="/stats" className="navbar-item">
+                        Statistiques
+                    </Link>
+                </div>
             </div>
         </nav>
     )
@@ -114,6 +165,9 @@ const PieChart = ({ data, label }) => {
     )
   }
 const HeatMap = ({onMapMove, onMarkerClick}) => {
+    const { settings, setSettings } = useContext(SettingsContext)
+    const location = settings.location
+    const model = settings.model
     const mapContainerRef = useRef(null)
     const [map, setMap] = useState(null)
     useEffect(() => {
@@ -152,10 +206,14 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
         }
     }, [])
     useEffect(() => {
+        let objects = {
+            "heatlayer": null,
+            "markers": []
+        }
         const fetchData = async () => {
             try {
-                let data = await (await fetch(`/api/heatmapdata`)).json()
-                L.heatLayer(data.heatmapjson, {max: 10}).addTo(map)
+                let data = await (await fetch(`/api/heatmapdata?location=${location}&model=${model}`)).json()
+                objects.heatlayer = L.heatLayer(data.heatmapjson, {max: 10}).addTo(map)
                 for (let i = 0; i < data.carnetCoords.length; i++) {
                     const carnetCoord = data.carnetCoords[i]
                     let icon
@@ -176,12 +234,13 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
                             icon = L.divIcon({ html: "😐", className: "icon" })
                             break
                     }
-                    L.marker([carnetCoord.lat, carnetCoord.lon], {icon: icon})
+                    objects.markers.push(L.marker([carnetCoord.lat, carnetCoord.lon], {icon: icon})
                         .bindTooltip(`<b>${carnetCoord.vehicule}</b><br/>${icon.options.html} ${carnetCoord.bilan}`)
                         .addTo(map)
                         .on('click', function(e) {
                             onMarkerClick(carnetCoord.carnetEntryIndex)
                         })
+                    )
                 }
             } catch (error) {
                 console.log("data couldn't be fetched", error)
@@ -190,7 +249,17 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
         if (map) {
             fetchData()
         }
-    }, [map])
+        return () => {
+            if (objects.heatlayer) {
+                objects.heatlayer.remove()
+                objects.heatlayer = null
+            }
+            for (let i = 0; i < objects.markers.length; i++) {
+                objects.markers[i].remove()
+            }
+            objects.markers = []
+        }
+    }, [map, location, model])
 
     return (
         <div>
@@ -467,6 +536,9 @@ const Carnet = ({carnetIndex, carnetEntry}) => {
 }
 
 const Home = () => {
+    const { settings, setSettings } = useContext(SettingsContext)
+    const location = settings.location
+    const model = settings.model
     const history = useHistory()
     const [mapBounds, setMapBounds] = useState({
         sw: {lat: 37.9961626797281, lng: -27.2900390625},
@@ -478,14 +550,14 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
             if (mapBounds && tab === "stats") {
-                const stats = await fetch('/api/tripsInBbox?southWestLat=' + mapBounds.sw.lat + '&northEastLat=' + mapBounds.ne.lat + '&southWestLon=' + mapBounds.sw.lng + '&northEastLon=' + mapBounds.ne.lng)
+                const stats = await fetch(`/api/tripsInBbox?southWestLat=${mapBounds.sw.lat}&northEastLat=${mapBounds.ne.lat}&southWestLon=${mapBounds.sw.lng}&northEastLon=${mapBounds.ne.lng}&location=${location}&model=${model}`) 
                 const statsJson = await stats.json()
                 console.log(statsJson)
                 setStats(statsJson)
             }
         }
         fetchData()
-    }, [mapBounds, tab])
+    }, [mapBounds, tab, location, model])
     const onMapMove = (mapBounds) => {
         // console.log(mapBounds.getSouthWest(), mapBounds.getNorthEast())
         setMapBounds({
@@ -506,6 +578,13 @@ const Home = () => {
         bilanData["Trajets sans bilan"] = stats[i].nbTrips - stats[i].carnetEntries.length
         stats[i].bilanData = bilanData
     }
+    let filterText = ""
+    if (settings.location && settings.location !== "Tous") {
+        filterText += `(${settings.location})`
+    }
+    if (settings.model && settings.model !== "Tous") {
+        filterText += `(${settings.model})`
+    }
     return (
         <div className="main">
             <section className="section">
@@ -517,7 +596,15 @@ const Home = () => {
                         <p>Le projet 30 VELI est lancé en partenariat entre l'<a href="https://www.ademe.fr/">ADEME</a> et <a href="https://lafabriquedesmobilites.fr/">la Fabrique de Mobilités</a>, dans le cadre de l'<a href="https://xd.ademe.fr/">eXtrême Défi Mobilité</a>. Il consiste à tester 30 véhicules sur 16 territoires au total pour fin 2025.</p>
                         <p>Ce tableau bord partage des statistiques générales sur les voyages à bord de ces véhicules, mesurées à partir de capteurs embarqués, ainsi que les expériences des testeurs issus de questionnaires.</p>
                         <h2 className="subtitle">
-                            Vue d'ensemble
+                            Vue d'ensemble {filterText}
+                            <div style={{"float": "right"}}>
+                                <button className="button" onClick={() => setSettings({...settings, show: true})}>
+                                    <span className="icon">
+                                        <i className="fa fa-gear"></i>
+                                    </span>
+                                    <span>Paramètres</span>
+                                </button>
+                            </div>
                         </h2>
                         <HeatMap onMapMove={onMapMove} onMarkerClick={onMarkerClick}/>
                         <div className="tabs mt-4">
@@ -684,19 +771,6 @@ const Profile = () => {
     )   
 }
 
-const locations = [
-    "Tous",
-    "CC 7 Vallées",
-    "CC Clunisois",
-    "CC Grand Pic St Loup",
-    "Commune de Tressin",
-    "Commune des Mureaux",
-    "Commune du Teil",
-    "PNR Grand Causses",
-    "Lalouvesc",
-    "Loos en Gohelle"
-]
-
 const Stats = () => {
     const history = useHistory()
     const [stats, setStats] = React.useState(null)
@@ -803,27 +877,33 @@ const Footer = () => {
 }
 
 const App = () => {
+    const [settings, setSettings] = React.useState({
+        show: false,
+    })
     return (
         <BrowserRouter>
-            <NavBar />
-            <Switch>
-                <Route path="/profile">
-                    <Profile/>
-                </Route>
-                <Route path="/stats/:location">
-                    <Stats/>
-                </Route>
-                <Route path="/stats">
-                    <Stats/>
-                </Route>
-                <Route path="/:carnetIndex">
-                    <Home/>
-                </Route>
-                <Route path="/">
-                    <Home />
-                </Route>
-            </Switch>
-            <Footer />
+            <SettingsContext.Provider value={{ settings, setSettings }}>
+                <SettingsModal />
+                <NavBar />
+                <Switch>
+                    <Route path="/profile">
+                        <Profile/>
+                    </Route>
+                    <Route path="/stats/:location">
+                        <Stats/>
+                    </Route>
+                    <Route path="/stats">
+                        <Stats/>
+                    </Route>
+                    <Route path="/:carnetIndex">
+                        <Home/>
+                    </Route>
+                    <Route path="/">
+                        <Home />
+                    </Route>
+                </Switch>
+                <Footer />
+            </SettingsContext.Provider>
         </BrowserRouter>
     )
 }

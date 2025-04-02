@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const Database = require('better-sqlite3')
-const heatmapjson = require('./heatmap.json')
+const fs = require('fs')
 const path = require('path')
 const h3 = require("h3-js")
 
@@ -43,7 +43,17 @@ const genGeojsonFromCoords = (coords) => {
     }
 }
 app.get('/api/heatmapdata', (req, res) => {
-    const carnetRows = db.prepare(`select carnetEntryIndex, coords, point_noir_1_lat, point_noir_1_lon, bilan, vehicule from trips_with_carnet_match where carnetEntryIndex not null and vehicule != 'Golf6' group by carnetEntryIndex`).all()
+    const location = (req.query.location === "undefined" || req.query.location === "Tous") ? null : req.query.location
+    const model = (req.query.model === "undefined" || req.query.model === "Tous") ? null : req.query.model
+    let query = `select carnetEntryIndex, coords, point_noir_1_lat, point_noir_1_lon, bilan, vehicule from trips_with_carnet_match where carnetEntryIndex not null and vehicule != 'Golf6'`
+    if (location) {
+        query += ` and location = '${location}'`
+    }
+    if (model) {
+        query += ` and Model = '${model}'`
+    }
+    query += ` group by carnetEntryIndex`
+    const carnetRows = db.prepare(query).all()
     let carnetCoords = []
     for (let i = 0; i < carnetRows.length; i++) {
         const carnetRow = carnetRows[i]
@@ -54,6 +64,15 @@ app.get('/api/heatmapdata', (req, res) => {
             const midCoord = coords[Math.floor(coords.length / 2)]
             carnetCoords.push({lat: midCoord[0], lon: midCoord[1], carnetEntryIndex: carnetRow.carnetEntryIndex, bilan: carnetRow.bilan, vehicule: carnetRow.vehicule})
         }
+    }
+    let jsonFile = "heatmaps/" + (location ? location : 'all')
+    jsonFile += '/' + (model ? model : 'all') + '.json'
+    console.log(jsonFile)
+    let heatmapjson
+    try {
+        heatmapjson = JSON.parse(fs.readFileSync(jsonFile))
+    } catch (error) {
+        heatmapjson = {}
     }
     res.json({heatmapjson, carnetCoords})
 })
@@ -82,8 +101,12 @@ app.put('/api/carnet/:carnetIndex/:field', (req, res) => {
 })
 
 app.get('/api/tripsInBbox', (req, res) => {
+    const location = (req.query.location === "undefined" || req.query.location === "Tous") ? null : req.query.location
+    const model = (req.query.model === "undefined" || req.query.model === "Tous") ? null : req.query.model
     const rows = db.prepare("select Model, group_concat(distinct carnetEntryIndex) as carnetEntryIndexes, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips from trips_with_carnet_match where UniqueTripID in " +
         `(select DISTINCT UniqueTripID from raw_with_trip_ids where "Latitude(loc)" BETWEEN ? and ? and "Longitude(loc)" BETWEEN ? and ?) ` +
+        (location ? ` and location = '${location}' ` : "") +
+        (model ? ` and Model = '${model}' ` : "") +
         "group by Model"
     ).all(parseFloat(req.query.southWestLat), parseFloat(req.query.northEastLat), parseFloat(req.query.southWestLon), parseFloat(req.query.northEastLon))
     for (let i = 0; i < rows.length; i++) {
