@@ -692,9 +692,11 @@ const locations = [
     "Commune de Tressin",
     "Commune des Mureaux",
     "Commune du Teil",
+    "PNR Grand Causses",
     "Lalouvesc",
     "Loos en Gohelle"
 ]
+
 const Stats = () => {
     const history = useHistory()
     const [stats, setStats] = React.useState(null)
