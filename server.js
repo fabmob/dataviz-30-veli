@@ -58,11 +58,11 @@ app.get('/api/heatmapdata', (req, res) => {
     for (let i = 0; i < carnetRows.length; i++) {
         const carnetRow = carnetRows[i]
         if (carnetRow.point_noir_1_lat) {
-            carnetCoords.push({lat: carnetRow.point_noir_1_lat, lon: carnetRow.point_noir_1_lon, carnetEntryIndex: carnetRow.carnetEntryIndex, bilan: carnetRow.bilan, vehicule: carnetRow.vehicule})
+            carnetCoords.push({lat: carnetRow.point_noir_1_lat, lon: carnetRow.point_noir_1_lon, carnetEntryIndex: carnetRow.carnetEntryIndex, bilan: carnetRow.bilan, vehicule: carnetRow.vehicule, isPointNoir: true})
         } else if (carnetRow.coords) {
             const coords = JSON.parse(carnetRow.coords.replace(/\(/g, "[").replace(/\)/g, "]"))
             const midCoord = coords[Math.floor(coords.length / 2)]
-            carnetCoords.push({lat: midCoord[0], lon: midCoord[1], carnetEntryIndex: carnetRow.carnetEntryIndex, bilan: carnetRow.bilan, vehicule: carnetRow.vehicule})
+            carnetCoords.push({lat: midCoord[0], lon: midCoord[1], carnetEntryIndex: carnetRow.carnetEntryIndex, bilan: carnetRow.bilan, vehicule: carnetRow.vehicule, isPointNoir: false})
         }
     }
     let jsonFile = "heatmaps/" + (location ? location : 'all')
@@ -227,7 +227,7 @@ app.get('/api/experiences', (req, res) => {
         group by carnetEntryIndex
     `)
     let rows = stmt.all()
-    const stmt_edits = db_edits.prepare("select carnetEntryIndex, field, value as commentaires from carnets_edits")
+    const stmt_edits = db_edits.prepare("select carnetEntryIndex, field, value from carnets_edits")
     const allEdits = stmt_edits.all()
     for (let j = 0; j < allEdits.length; j++) {
         const edit = allEdits[j]
@@ -235,7 +235,7 @@ app.get('/api/experiences', (req, res) => {
             if (!rows[k].edits) rows[k].edits = {}
             if (rows[k].carnetEntryIndex === edit.carnetEntryIndex) {
                 rows[k].edits[edit.field] = edit.value
-                rows[k].commentaires = edit.commentaires
+                rows[k].commentaires = edit.value
             }
         }
     }

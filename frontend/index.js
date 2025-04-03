@@ -60,6 +60,15 @@ const SettingsModal = () => {
                             </select>
                         </div>
                     </div>
+                    <div className="field">
+                        <label className="label">Afficher uniquement les expériences avec un point noir géolocalisé</label>
+                        <div className="select">
+                            <select value={settings.showOnlyPointNoir} onChange={(e) => setSettings({...settings, showOnlyPointNoir: e.target.value})}>
+                                <option value="false">Non</option>
+                                <option value="true">Oui</option>
+                            </select>
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>
@@ -168,6 +177,7 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
     const { settings, setSettings } = useContext(SettingsContext)
     const location = settings.location
     const model = settings.model
+    const showOnlyPointNoir = settings.showOnlyPointNoir
     const mapContainerRef = useRef(null)
     const [map, setMap] = useState(null)
     useEffect(() => {
@@ -216,6 +226,9 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
                 objects.heatlayer = L.heatLayer(data.heatmapjson, {max: 10}).addTo(map)
                 for (let i = 0; i < data.carnetCoords.length; i++) {
                     const carnetCoord = data.carnetCoords[i]
+                    if (settings.showOnlyPointNoir && !carnetCoord.isPointNoir) {
+                        continue
+                    }
                     let icon
                     switch (carnetCoord.bilan) {
                         case "Très positif":
@@ -259,7 +272,7 @@ const HeatMap = ({onMapMove, onMarkerClick}) => {
             }
             objects.markers = []
         }
-    }, [map, location, model])
+    }, [map, location, model, showOnlyPointNoir])
 
     return (
         <div>
