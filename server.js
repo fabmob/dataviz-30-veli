@@ -140,6 +140,7 @@ const modelTypeMap = {
     "Formidable": "Actif",
     "Woodybus": "Actif",
     "Cyclospace": "Actif",
+    "Acticycle": "Actif",
 }
 const stats_cache = {}
 const fetchStats = (location) => {

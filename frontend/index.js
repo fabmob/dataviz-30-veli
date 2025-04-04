@@ -5,16 +5,16 @@ const SettingsContext = React.createContext(null)
 
 const modelPicturesMap = {
     "Tous": "",
-    "BIRO": "https://wikixd.fabmob.io/images/fabmob/f/f6/NeedToRemoveBG_1-03148.png",
-    "Cyclospace": "https://wikixd.fabmob.io/images/fabmob/4/45/Cyclospace.jpg",
-    "Formidable": "https://galiancycles.com/cdn/shop/files/GALIAN_2024_LeFormidable_Configurateur_4-transparent.png",
-    "Galian": "https://galiancycles.com/cdn/shop/files/GALIAN_2024_LeFormidable_Configurateur_4-transparent.png",
-    "Frikar": "https://wikixd.fabmob.io/images/fabmob/b/bb/Without-window-wiper-e1602504124526.png",
-    "Karbikes": "https://wikixd.fabmob.io/images/fabmob/4/4d/Karbike-83.jpg",
-    "Urbaner": "https://wikixd.fabmob.io/images/fabmob/6/62/Urbaner_%2B_Randoner.jpeg",
-    "WEEZ": "https://wikixd.fabmob.io/images/fabmob/2/27/Weez.png",
-    "Woodybus": "https://wikixd.fabmob.io/images/fabmob/7/7a/Wood3-min.png",
-    "Citroen_AMI": "https://wikixd.fabmob.io/images/fabmob/d/dc/AMI1.png"
+    "BIRO": "images/BIRO.png",
+    "Cyclospace": "images/Cyclospace.jpg",
+    "Formidable": "images/Formidable.png",
+    "Frikar": "images/Frikar.png",
+    "Karbikes": "images/Karbikes.jpg",
+    "Urbaner": "images/Urbaner.jpeg",
+    "WEEZ": "images/WEEZ.png",
+    "Woodybus": "images/Woodybus.png",
+    "Citroen_AMI": "images/Citroen_AMI.png",
+    "Acticycle": "images/Acticycle.png"
 }
 
 const locations = [
