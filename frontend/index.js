@@ -494,6 +494,24 @@ const Carnet = ({carnetIndex, carnetEntry}) => {
                                             <span className="tag is-primary">{carnet.motif}</span>
                                         </div>
                                     </div>
+                                    {carnet.mode_domicile_travail && <div className="control">
+                                        <div className="tags has-addons">
+                                            <span className="tag">Mode habituel domicile travail</span>
+                                            <span className="tag is-primary">{carnet.mode_domicile_travail}</span>
+                                        </div>
+                                    </div>}
+                                    {carnet.mode_domicile_etudes && <div className="control">
+                                        <div className="tags has-addons">
+                                            <span className="tag">Mode habituel domicile etudes</span>
+                                            <span className="tag is-primary">{carnet.mode_domicile_etudes}</span>
+                                        </div>
+                                    </div>}
+                                    {carnet.mode_domicile_loisirs && <div className="control">
+                                        <div className="tags has-addons">
+                                            <span className="tag">Mode habituel domicile loisirs</span>
+                                            <span className="tag is-primary">{carnet.mode_domicile_loisirs}</span>
+                                        </div>
+                                    </div>}
                                 </div>
                                 {carnet.geojson && <p className="subtitle mt-4">Trajets approximatifs et points noirs</p>}
                                 {carnet.geojson && <div>

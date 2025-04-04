@@ -78,7 +78,7 @@ app.get('/api/heatmapdata', (req, res) => {
 })
 
 app.get('/api/carnet/:carnetIndex', (req, res) => {
-    const carnet = db.prepare("select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, group_concat(distinct UniqueTripID) as uniqueTripIDs, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat from trips_with_carnet_match where carnetEntryIndex = ? group by carnetEntryIndex").get(req.params.carnetIndex)
+    const carnet = db.prepare("select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, group_concat(distinct UniqueTripID) as uniqueTripIDs, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat, mode_domicile_travail, mode_domicile_etudes, mode_domicile_loisirs from trips_with_carnet_match where carnetEntryIndex = ? group by carnetEntryIndex").get(req.params.carnetIndex)
     if (carnet.uniqueTripIDs) {
         const uniqueTripIDs = carnet.uniqueTripIDs.split(',')
         const coords = db.prepare(`select "Latitude(loc)" as lat, "Longitude(loc)" as lon from raw_with_trip_ids where UniqueTripID in (${uniqueTripIDs.map(e => '?').join(',')})`).all(uniqueTripIDs)
@@ -141,7 +141,11 @@ const modelTypeMap = {
     "Woodybus": "Actif",
     "Cyclospace": "Actif",
 }
+const stats_cache = {}
 const fetchStats = (location) => {
+    if (stats_cache[location]) {
+        return stats_cache[location]
+    }
     let rows
     if (location) {
         rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and location = ? group by Model").all(location)
@@ -182,6 +186,7 @@ const fetchStats = (location) => {
             res.lastTrip = row.lastTrip
         }
     }
+    stats_cache[location] = res
     return res
 }
 
@@ -221,7 +226,7 @@ const permisMatch = [
 ]
 app.get('/api/experiences', (req, res) => {
     const stmt = db.prepare(`
-        select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat 
+        select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat, mode_domicile_travail, mode_domicile_etudes, mode_domicile_loisirs
         from trips_with_carnet_match 
         where carnetEntryIndex >= 0 and ${permisMatch[req.query.permis]} and ${distancesMatch[req.query.distance]} and ${motifsMatch[req.query.motif]}
         group by carnetEntryIndex
