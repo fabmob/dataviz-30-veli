@@ -13,7 +13,6 @@ const modelPicturesMap = {
     "Urbaner": "images/Urbaner.jpeg",
     "WEEZ": "images/WEEZ.png",
     "Woodybus": "images/Woodybus.png",
-    "Citroen_AMI": "images/Citroen_AMI.png",
     "Acticycle": "images/Acticycle.png"
 }
 
