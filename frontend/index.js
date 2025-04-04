@@ -36,7 +36,7 @@ const SettingsModal = () => {
         return null
     }
     return (
-        <div className={`modal ${settings.show ? "is-active" : ""}`} style={{zIndex: 1000}}>
+        <div className={`modal ${settings.show ? "is-active" : ""}`} style={{zIndex: 1010}}>
             <div className="modal-background" onClick={() => setSettings({...settings, show: false})}></div>
             <div className="modal-card">
                 <header className="modal-card-head">
