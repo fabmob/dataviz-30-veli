@@ -682,7 +682,7 @@ const Profile = () => {
     const scrollRef = React.useRef(null)
     const motifs = ["pour toutes raisons", "pour me rendre au travail", "pour mon travail", "pour mes loisirs", "pour faire mes courses", "pour mes enfants/famille", "pour aller chez le médecin"]
     const distances = ["toutes distances", "moins de 2 km", "entre 2 et 5 km", "entre 5 et 10 km", "entre 10 et 20 km", "plus de 20 km"]
-    const permis = ["j'ai mon permis", "je n'ai pas mon permis"]
+    const permis = ["je conduis tout type de véhicule", "je préfère les véhicules sans permis"]
     const [profile, setProfile] = React.useState({motif: motifs[1], distance: distances[2], permis: permis[0]})
     const [carnet, setCarnet] = React.useState(null)
     const [experiences, setExperiences] = React.useState({})
