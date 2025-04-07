@@ -5,6 +5,7 @@ const SettingsContext = React.createContext(null)
 
 const modelPicturesMap = {
     "Tous": "",
+    "Acticycle": "images/Acticycle.png",
     "BIRO": "images/BIRO.png",
     "Cyclospace": "images/Cyclospace.jpg",
     "Formidable": "images/Formidable.png",
@@ -13,20 +14,20 @@ const modelPicturesMap = {
     "Urbaner": "images/Urbaner.jpeg",
     "WEEZ": "images/WEEZ.png",
     "Woodybus": "images/Woodybus.png",
-    "Acticycle": "images/Acticycle.png"
 }
 
 const locations = [
     "Tous",
+    "Avant Pays Savoyard",
     "CC 7 Vallées",
     "CC Clunisois",
     "CC Grand Pic St Loup",
     "Commune de Tressin",
     "Commune des Mureaux",
     "Commune du Teil",
-    "PNR Grand Causses",
     "Lalouvesc",
-    "Loos en Gohelle"
+    "Loos en Gohelle",
+    "PNR Grand Causses",
 ]
 
 const SettingsModal = () => {
