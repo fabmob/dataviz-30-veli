@@ -12,6 +12,7 @@
   "dependencies": {
     "better-sqlite3": "^11.8.1",
     "cors": "^2.8.5",
+    "csv-stringify": "^6.5.2",
     "express": "^4.21.2",
     "h3-js": "^4.1.0"
   }

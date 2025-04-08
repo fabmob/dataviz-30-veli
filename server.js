@@ -4,6 +4,7 @@ const Database = require('better-sqlite3')
 const fs = require('fs')
 const path = require('path')
 const h3 = require("h3-js")
+const csv_stringify = require("csv-stringify/sync")
 
 const port = process.env.PORT || 8081;
 const db = new Database('data.db')
@@ -266,7 +267,13 @@ app.get('/api/experiences', (req, res) => {
         result[rows[i].Model].bilanData[rows[i].bilan] += 1
         result[rows[i].Model].carnetEntries.push(rows[i])
     }
-    res.json(result)
+    if (req.query.format === "csv") {
+        res.setHeader('Content-Type', 'text/csv')
+        res.setHeader('Content-Disposition', 'attachment; filename="30veli_export_experiences.csv"')
+        res.send(csv_stringify.stringify(rows, {header: true}))
+    } else {
+        res.json(result)
+    }
 })
 
 
