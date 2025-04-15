@@ -1,19 +1,39 @@
 {
-  "name": "dataviz",
+  "name": "dataviz_30veli",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "build:dev": "tsc --watch --preserveWatchOutput",
+    "start:dev": "nodemon dist/index.js & webpack -w"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": [],
+  "author": "TTalex",
+  "license": "MIT",
+  "description": "",
   "dependencies": {
-    "better-sqlite3": "^11.8.1",
+    "better-sqlite3": "^11.9.1",
+    "chart.js": "^4.4.8",
     "cors": "^2.8.5",
     "csv-stringify": "^6.5.2",
-    "express": "^4.21.2",
-    "h3-js": "^4.1.0"
+    "express": "^5.1.0",
+    "h3-js": "^4.1.0",
+    "react": "^19.1.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.4.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
+    "@types/react-router": "^5.1.20",
+    "nodemon": "^3.1.9",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.2",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
   }
 }
