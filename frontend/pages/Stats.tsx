@@ -41,7 +41,7 @@ const Stats = () => {
                                 </div>
                                 <div className="control">
                                     <div className="tags has-addons">
-                                        <span className="tag is-dark is-medium">Date du trajet dernier trajet analysé</span>
+                                        <span className="tag is-dark is-medium">Date du dernier trajet analysé</span>
                                         <span className="tag is-info is-medium">{new Date(stats.lastTrip).toLocaleDateString()}</span>
                                     </div>
                                 </div>
