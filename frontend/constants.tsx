@@ -9,11 +9,14 @@ export const modelPicturesMap = {
     "Urbaner": "images/Urbaner.jpeg",
     "WEEZ": "images/WEEZ.png",
     "Woodybus": "images/Woodybus.png",
+    "MidiPile": "images/Midipile.png",
+    "Maillon Mobility": "images/MaillonMobility.jpg",
 }
 
 export const locations = [
     "Tous",
     "Avant Pays Savoyard",
+    "CA du Grand Avignon",
     "CC 7 Vallées",
     "CC Clunisois",
     "CC Grand Pic St Loup",
@@ -21,6 +24,7 @@ export const locations = [
     "Commune des Mureaux",
     "Commune du Teil",
     "Lalouvesc",
+    "Le Mans",
     "Loos en Gohelle",
     "PNR Grand Causses",
 ]
