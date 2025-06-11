@@ -101,7 +101,7 @@ const Stats = () => {
                             <i className="fa fa-chart-line"></i> Statistiques détaillées par trajet
                         </h1>
                         <p>
-                            Seuls les trajets entre 100 m et 100 km sont considérés afin limiter les erreurs de mesure. Toutefois, une part importante des trajets très courts peuvent être dus à des imprécisions de capteurs.
+                            Seuls les trajets entre 100 m et 100 km sont considérés afin limiter les erreurs de mesure. Toutefois, une part importante des trajets très courts peuvent être dus à des imprécisions de capteurs. (Cliquez sur une légende pour la masquer).
                         </p>
                         <div className="columns">
                             <div className="column">
