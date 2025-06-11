@@ -87,6 +87,21 @@ interface StatsType {
     firstTrip: string,
     lastTrip: string
 }
+interface ModelTripStatType {
+    avgDistanceKm: number, 
+    nbTrips: number, 
+    medianDistanceKm: number,
+    medianDistanceKmTravail?: number,
+    avgDistanceKmTravail?: number,
+    nbTripsTravail?: number
+}
+interface TripDistanceStatType {
+    [key: string]: number
+}
+interface TripsStatsType {
+    models: { [key: string]: ModelTripStatType },
+    trips_per_distance: TripDistanceStatType,
+}
 interface SettingsContextType {
     settings: Settings,
     setSettings: React.Dispatch<React.SetStateAction<Settings>>
@@ -99,5 +114,8 @@ export {
     TripsInBboxType,
     ExperiencesType,
     StatsType,
+    TripDistanceStatType,
+    TripsStatsType,
+    ModelTripStatType,
     SettingsContextType
 }

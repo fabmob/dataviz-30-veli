@@ -4,14 +4,19 @@ import { useParams, useNavigate } from "react-router"
 import * as types from '../types'
 import { locations } from '../constants'
 
+import BarCharts from '../components/BarCharts'
+
 const Stats = () => {
     const navigate = useNavigate()
     const [stats, setStats] = React.useState<null | types.StatsType>(null)
+    const [tripStats, setTripStats] = React.useState<null | types.TripsStatsType>(null)
     const [statsLocation, setStatsLocation] = React.useState(useParams().location || "")
     React.useEffect(() => {
         const fetchData = async () => {
             const stats = await fetch('/api/stats/' + statsLocation)
             setStats(await stats.json())
+            const tripStats = await fetch('/api/tripStats/' + statsLocation).then(res => res.json())
+            setTripStats(tripStats)
         }
         fetchData()
     }, [statsLocation])
@@ -27,10 +32,20 @@ const Stats = () => {
             <section className="section">
                 <div className="container">
                     <div className="content">
+                        {!isEmbed && <div className="field">
+                            <label className="label">Choix du territoire</label>
+                            <div className="control">
+                                <div className="select">
+                                <select value={statsLocation} onChange={handleSelect}>
+                                    {locations.map((location, index) => <option key={index} value={location}>{location}</option>)}
+                                </select>
+                                </div>
+                            </div>
+                        </div>}
+
                         <h1 className="title">
                             Expérimentation 30 VELI, statistiques générales {statsLocation && `(${statsLocation})`}
                         </h1>
-                        
                         {stats &&<div className="block">
                             <div className="field is-grouped is-grouped-multiline">
                                 <div className="control">
@@ -72,20 +87,33 @@ const Stats = () => {
             {!isEmbed && <section className="section">
                 <div className="container">
                     <div className="content">
-                        <h2 className="subtitle">
-                            <i className="fa fa-code"></i> Intégrer les statistiques dans votre site
-                        </h2>
-                        <div className="field">
-                            <label className="label">Choix du territoire</label>
-                            <div className="control">
-                                <div className="select">
-                                <select value={statsLocation} onChange={handleSelect}>
-                                    {locations.map((location, index) => <option key={index} value={location}>{location}</option>)}
-                                </select>
-                                </div>
+                        <h3 className="subtitle">
+                            <i className="fa fa-code"></i> Intégrer les statistiques générales dans votre site
+                        </h3>
+                        <textarea className="textarea" readOnly value={exportIframeText} />
+                    </div>
+                </div>
+            </section>}
+            {!isEmbed && <section className="section">
+                <div className="container">
+                    <div className="content">
+                        <h1 className="subtitle">
+                            <i className="fa fa-chart-line"></i> Statistiques détaillées par trajet
+                        </h1>
+                        <p>
+                            Seuls les trajets entre 100 m et 100 km sont considérés afin limiter les erreurs de mesure. Toutefois, une part importante des trajets très courts peuvent être dus à des imprécisions de capteurs.
+                        </p>
+                        <div className="columns">
+                            <div className="column">
+                                {tripStats && <BarCharts.TripModelBarChart data={tripStats.models} workFilter={false} />}
+                            </div>
+                            <div className="column">
+                                {tripStats && <BarCharts.TripModelBarChart data={tripStats.models} workFilter={true} />}
                             </div>
                         </div>
-                        <textarea className="textarea" readOnly value={exportIframeText} />
+                        <div>
+                            {tripStats && <BarCharts.TripDistanceBarChart data={tripStats.trips_per_distance} />}
+                        </div>
                     </div>
                 </div>
             </section>}

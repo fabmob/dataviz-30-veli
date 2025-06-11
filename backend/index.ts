@@ -250,9 +250,9 @@ const fetchStats = (location?: string) => {
     }
     let rows
     if (location) {
-        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and location = ? group by Model").all(location) as StatsRow[]
+        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and location = ? and totalDistanceKm > 0.1 group by Model").all(location) as StatsRow[]
     } else {
-        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL group by Model").all() as StatsRow[]
+        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and totalDistanceKm > 0.1 group by Model").all() as StatsRow[]
     }
     let res : Stats = {
         models: {},
@@ -302,7 +302,117 @@ app.get('/api/stats/:location', (req, res) => {
     res.json(fetchStats(req.params.location))
 })
 
+interface TripsStatsType {
+    models: { [key: string]: { 
+        avgDistanceKm: number, 
+        nbTrips: number, 
+        medianDistanceKm: number,
+        medianDistanceKmTravail?: number,
+        avgDistanceKmTravail?: number,
+        nbTripsTravail?: number
+     } },
+    trips_per_distance: {
+        [key: string]: number
+    },
+}
+interface TripsStatsRow {
+    Model: string,
+    avgDistanceKm: number,
+    nbTrips: number,
+}
+const tripStatsCache : { [key: string]: TripsStatsType } = {}
+const fetchTripStats = (location?: string) => {
+    if (location) {
+        if (tripStatsCache[location]) {
+            return tripStatsCache[location]
+        }
+    } else {
+        if (tripStatsCache["Tous"]) {
+            return tripStatsCache["Tous"]
+        }
+    }
+    let locationParam = "location != 'En transit'"
+    if (location) {
+        locationParam = `location = '${location}'`
+    }
+    const rows = db.prepare(`
+        select Model, avg(TotalDistanceKm) as avgDistanceKm, count() as nbTrips
+        from trips_with_carnet_match 
+        where Model is not NULL and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam}
+        group by Model
+    `).all() as TripsStatsRow[]
+    let stats : TripsStatsType = {
+        models: {},
+        trips_per_distance: {}
+    }
+    rows.forEach((row) => {
+        stats.models[row.Model] = {
+            avgDistanceKm: row.avgDistanceKm,
+            nbTrips: row.nbTrips,
+            medianDistanceKm: 0,
+        }
+    })
+    const rows_travail = db.prepare(`
+        select Model, avg(TotalDistanceKm) as avgDistanceKm, count() as nbTrips
+        from trips_with_carnet_match 
+        where Model is not NULL and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam} and motif like '%ravail%'
+        group by Model
+    `).all() as TripsStatsRow[]
+    rows_travail.forEach((row) => {
+        stats.models[row.Model].avgDistanceKmTravail = row.avgDistanceKm
+        stats.models[row.Model].nbTripsTravail = row.nbTrips
+    })
+    const stmt = db.prepare(`
+        select TotalDistanceKm as medianDistanceKm
+        from trips_with_carnet_match
+        where Model = ? and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam}
+        order by TotalDistanceKm
+        LIMIT 1
+        offset ?
+    `)
+    const stmt_travail = db.prepare(`
+        select TotalDistanceKm as medianDistanceKm
+        from trips_with_carnet_match
+        where Model = ? and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam} and motif like '%ravail%'
+        order by TotalDistanceKm
+        LIMIT 1
+        offset ?
+    `)
+    for (let i = 0; i < Object.keys(stats.models).length; i++) {
+        const model = Object.keys(stats.models)[i]
+        if (stats.models[model].nbTrips > 1) {
+            let row = stmt.get(model, Math.ceil(stats.models[model].nbTrips / 2)) as { medianDistanceKm: number }
+            stats.models[model].medianDistanceKm = row.medianDistanceKm
+            const nbTripsTravail = stats.models[model].nbTripsTravail || 0
+            if (nbTripsTravail > 1) {
+                let row_travail = stmt_travail.get(model, Math.ceil(nbTripsTravail / 2)) as { medianDistanceKm: number }
+                stats.models[model].medianDistanceKmTravail = row_travail.medianDistanceKm
+            }
+        }
+    }
+    const trips_per_distance = db.prepare(`
+        select round(TotalDistanceKm / 5)*5 as range_id, count() as nbTrips
+        from trips_with_carnet_match
+        where TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam}
+        group by range_id
+    `).all() as { range_id: number, nbTrips: number }[]
+    trips_per_distance.forEach((row) => {
+        stats.trips_per_distance[row.range_id] = row.nbTrips
+    })
+    if (!location) {
+        location = "Tous"
+    }
+    tripStatsCache[location] = stats
+    return stats
+}
 
+app.get('/api/tripStats/', (req, res) => {
+    res.json(fetchTripStats())
+})
+
+app.get('/api/tripStats/:location', (req, res) => {
+    res.json(fetchTripStats(req.params.location))
+})
 
 // const motifs = ["pour toutes raisons", "pour me rendre au travail", "pour mon travail", "pour mes loisirs", "pour faire mes courses", "pour mes enfants/famille", "pour aller chez le médecin"]
 //     const distances = ["toutes distances", "moins de 2 km", "entre 2 et 5 km", "entre 5 et 10 km", "entre 10 et 20 km", "plus de 20 km"]
