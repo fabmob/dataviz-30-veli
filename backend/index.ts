@@ -111,6 +111,7 @@ interface Carnet {
     avantage_reactions: number,
     avantage_bien_etre: number,
     avantage_autre: number,
+    tourisme_avantages_detail?: number, 
     difficulte_aucune: number,
     difficulte_visibilite: number,
     difficulte_amenagement: number,
@@ -118,6 +119,19 @@ interface Carnet {
     difficulte_vehicule: number,
     difficulte_comportement: number,
     difficulte_autre: number,
+    tourisme_difficulte_trafic?: number,
+    tourisme_difficulte_meteo?: number,
+    tourisme_difficulte_denivele?: number,
+    tourisme_difficulte_distance?: number,
+    tourisme_difficulte_autonomie?: number,
+    tourisme_difficulte_diff_vitesse?: number,
+    tourisme_difficulte_positionnement?: number,
+    tourisme_difficulte_intersection?: number,
+    tourisme_difficulte_depart_cote?: number,
+    tourisme_difficulte_fatigue?: number,
+    tourisme_difficulte_depassement?: number,
+    tourisme_difficulte_autre?: number,
+    tourisme_difficulte_detail?: string,
     point_noir_1: number,
     point_noir_2: number,
     bilan: string,
@@ -131,7 +145,7 @@ interface Carnet {
     mode_domicile_loisirs?: string
 }
 app.get('/api/carnet/:carnetIndex', (req, res) => {
-    const carnet = db.prepare("select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, group_concat(distinct UniqueTripID) as uniqueTripIDs, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat from trips_with_carnet_match where carnetEntryIndex = ? group by carnetEntryIndex")
+    const carnet = db.prepare("select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, group_concat(distinct UniqueTripID) as uniqueTripIDs, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat, tourisme_avantages_detail, tourisme_difficulte_trafic, tourisme_difficulte_meteo, tourisme_difficulte_denivele, tourisme_difficulte_distance, tourisme_difficulte_autonomie, tourisme_difficulte_diff_vitesse, tourisme_difficulte_positionnement, tourisme_difficulte_intersection, tourisme_difficulte_depart_cote, tourisme_difficulte_fatigue, tourisme_difficulte_depassement, tourisme_difficulte_autre, tourisme_difficulte_detail from trips_with_carnet_match where carnetEntryIndex = ? group by carnetEntryIndex")
         .get(req.params.carnetIndex) as Carnet
     if (carnet.uniqueTripIDs) {
         const uniqueTripIDs = carnet.uniqueTripIDs.split(',')

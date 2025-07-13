@@ -19,7 +19,8 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
         "Très positif": true,
         "Positif": true,
         "Négatif": true,
-        "Très négatif": true
+        "Très négatif": true,
+        "Non déclaré": true
     })
     useEffect(() => {
         if (!map) {
@@ -71,7 +72,7 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
                 let data = await (await fetch(`/api/heatmapdata?location=${location}&model=${model}`)).json()
                 objects.heatlayer = L.heatLayer(data.heatmapjson, {max: 10}).addTo(map)
                 for (let i = 0; i < data.carnetCoords.length; i++) {
-                    const carnetCoord = data.carnetCoords[i]
+                    let carnetCoord = data.carnetCoords[i]
                     if (settings.showOnlyPointNoir && !carnetCoord.isPointNoir) {
                         continue
                     }
@@ -90,7 +91,8 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
                             icon = L.divIcon({ html: "😡", className: "icon" })
                             break
                         default:
-                            icon = L.divIcon({ html: "😐", className: "icon" })
+                            carnetCoord.bilan = "Non déclaré"
+                            icon = L.divIcon({ html: "🤔", className: "icon" })
                             break
                     }
                     if (!bilanFilter[carnetCoord.bilan]) {
@@ -136,6 +138,7 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
                 <span style={!bilanFilter["Positif"] ? bilanUnselectedStyle : bilanSelectedStyle} onClick={() => editBilanFilter("Positif")}>🙂 Positive</span>,
                 <span style={!bilanFilter["Négatif"] ? bilanUnselectedStyle : bilanSelectedStyle} onClick={() => editBilanFilter("Négatif")}>🤕 Négative</span>,
                 <span style={!bilanFilter["Très négatif"] ? bilanUnselectedStyle : bilanSelectedStyle} onClick={() => editBilanFilter("Très négatif")}>😡 Très négative</span>
+                <span style={!bilanFilter["Non déclaré"] ? bilanUnselectedStyle : bilanSelectedStyle} onClick={() => editBilanFilter("Non déclaré")}>🤔 Non déclaré</span>
             </div>
         </div>
     )

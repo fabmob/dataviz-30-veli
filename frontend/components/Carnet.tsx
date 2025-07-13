@@ -66,6 +66,25 @@ const Carnet = ({carnetIndex, carnetEntry} : {carnetIndex?: string, carnetEntry?
             body: JSON.stringify({"value": value})
         })
     }
+    const getRessentiClassName = (ressenti) => {
+        if (!ressenti || ressenti === "0.0"|| ressenti == "0") return "tag"
+        return "tag is-primary"
+    }
+    let isTourism = carnet && (
+        carnet.tourisme_avantages_detail ||
+        carnet.tourisme_difficulte_trafic ||
+        carnet.tourisme_difficulte_meteo ||
+        carnet.tourisme_difficulte_denivele ||
+        carnet.tourisme_difficulte_distance ||
+        carnet.tourisme_difficulte_autonomie ||
+        carnet.tourisme_difficulte_diff_vitesse ||
+        carnet.tourisme_difficulte_positionnement ||
+        carnet.tourisme_difficulte_intersection ||
+        carnet.tourisme_difficulte_depart_cote ||
+        carnet.tourisme_difficulte_fatigue ||
+        carnet.tourisme_difficulte_depassement ||
+        carnet.tourisme_difficulte_autre
+    )
     return (
         <div>
             {carnet && <article className="message">
@@ -216,30 +235,46 @@ const Carnet = ({carnetIndex, carnetEntry} : {carnetIndex?: string, carnetEntry?
                     <p style={{whiteSpace: "pre-wrap"}}>{carnet.commentaires}</p>
                     <p className="title is-4">Avantages</p>
                     <div className="tags">
-                        <span className={"tag " + (carnet.avantage_bien_etre ? "is-primary" : "")}>Bien être</span>
-                        <span className={"tag " + (carnet.avantage_agilite ? "is-primary" : "")}>Agilité</span>
-                        <span className={"tag " + (carnet.avantage_confort ? "is-primary" : "")}>Confort</span>
-                        <span className={"tag " + (carnet.avantage_observation ? "is-primary" : "")}>Observation</span>
-                        <span className={"tag " + (carnet.avantage_fierté ? "is-primary" : "")}>Fierté</span>
-                        <span className={"tag " + (carnet.avantage_reactions ? "is-primary" : "")}>Réactions</span>
-                        <span className={"tag " + (carnet.avantage_autre ? "is-primary" : "")}>Autre: {carnet.avantage_autre}</span>
+                        <span className={getRessentiClassName(carnet.avantage_bien_etre)}>Bien être</span>
+                        <span className={getRessentiClassName(carnet.avantage_agilite)}>Agilité</span>
+                        <span className={getRessentiClassName(carnet.avantage_confort)}>Confort</span>
+                        <span className={getRessentiClassName(carnet.avantage_observation)}>Observation</span>
+                        <span className={getRessentiClassName(carnet.avantage_fierté)}>Fierté</span>
+                        <span className={getRessentiClassName(carnet.avantage_reactions)}>Réactions</span>
+                        <span className={getRessentiClassName(carnet.avantage_autre)}>Autre: {carnet.avantage_autre}</span>
                     </div>
+                    {carnet.tourisme_avantages_detail && <p style={{whiteSpace: "pre-wrap"}}>{carnet.tourisme_avantages_detail}</p>}
                     <p className="title is-4">Difficultés</p>
-                    <div className="tags">
-                        <span className={"tag " + (carnet.difficulte_visibilite ? "is-primary" : "")}>Visibilité</span>
-                        <span className={"tag " + (carnet.difficulte_amenagement ? "is-primary" : "")}>Aménagement</span>
-                        <span className={"tag " + (carnet.difficulte_stationnement ? "is-primary" : "")}>Stationnement</span>
-                        <span className={"tag " + (carnet.difficulte_vehicule ? "is-primary" : "")}>Véhicule</span>
-                        <span className={"tag " + (carnet.difficulte_comportement ? "is-primary" : "")}>Comportement</span>
-                        <span className={"tag " + (carnet.difficulte_autre ? "is-primary" : "")}>Autre: {carnet.difficulte_autre}</span>
+                    {isTourism ? <div className="tags">
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_trafic)}>Trafic</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_meteo)}>Météo</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_denivele)}>Route (dénivelé)</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_distance)}>Distance</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_autonomie)}>Autonomie</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_diff_vitesse)}>Vitesse des autres</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_positionnement)}>Positionnement sur route</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_intersection)}>Intersections</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_depart_cote)}>Départ en côte</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_fatigue)}>Fatigue</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_depassement)}>Dépassement</span>
+                        <span className={getRessentiClassName(carnet.tourisme_difficulte_autre)}>Autre</span>
                     </div>
-                    <p className="title is-4">Points noirs</p>
-                    <div className="columns">
+                    : <div className="tags">
+                        <span className={getRessentiClassName(carnet.difficulte_visibilite)}>Visibilité</span>
+                        <span className={getRessentiClassName(carnet.difficulte_amenagement)}>Aménagement</span>
+                        <span className={getRessentiClassName(carnet.difficulte_stationnement)}>Stationnement</span>
+                        <span className={getRessentiClassName(carnet.difficulte_vehicule)}>Véhicule</span>
+                        <span className={getRessentiClassName(carnet.difficulte_comportement)}>Comportement</span>
+                        <span className={getRessentiClassName(carnet.difficulte_autre)}>Autre: {carnet.difficulte_autre}</span>
+                    </div>}
+                    {carnet.tourisme_difficulte_detail && <p style={{whiteSpace: "pre-wrap"}}>{carnet.tourisme_difficulte_detail}</p>}
+                    {(carnet.point_noir_1 || carnet.point_noir_2) && <p className="title is-4">Points noirs</p>}
+                    {(carnet.point_noir_1 || carnet.point_noir_2) && <div className="columns">
                         <div className="column">
                             <p style={{whiteSpace: "pre-wrap"}}>{carnet.point_noir_1}</p>
                             <p style={{whiteSpace: "pre-wrap"}}>{carnet.point_noir_2}</p>
                         </div>
-                    </div>
+                    </div>}
                 </div>
             </div>}
         </div>
