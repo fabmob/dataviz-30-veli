@@ -230,6 +230,8 @@ const modelTypeMap = {
     "Woodybus": "Actif",
     "Cyclospace": "Actif",
     "Acticycle": "Actif",
+    "Qbx": "Actif",
+    "La Bagnole": "Passif",
 }
 interface StatsRow {
     Model: keyof typeof modelTypeMap,

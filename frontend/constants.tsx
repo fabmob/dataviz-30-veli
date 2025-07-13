@@ -12,6 +12,7 @@ export const modelPicturesMap = {
     "MidiPile": "images/Midipile.png",
     "Maillon Mobility": "images/MaillonMobility.jpg",
     "Qbx": "images/Qbx.jpg",
+    "La Bagnole": "images/LaBagnole.png",
 }
 
 export const locations = [

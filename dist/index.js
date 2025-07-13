@@ -143,6 +143,8 @@ const modelTypeMap = {
     "Woodybus": "Actif",
     "Cyclospace": "Actif",
     "Acticycle": "Actif",
+    "Qbx": "Actif",
+    "La Bagnole": "Passif",
 };
 const stats_cache = {};
 const fetchStats = (location) => {
