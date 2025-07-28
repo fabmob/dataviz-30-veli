@@ -21,6 +21,7 @@ export const locations = [
     "CA du Grand Avignon",
     "Centre Hospitalier de Niort",
     "CC 7 Vallées",
+    "CC Briançon",
     "CC Clunisois",
     "CC Grand Pic St Loup",
     "Commune de Tressin",
