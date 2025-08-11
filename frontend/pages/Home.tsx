@@ -66,7 +66,8 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
                             Le projet d’expérimentation 30 VELI 
                         </h1>
                         <p>Le projet 30 VELI est lancé en partenariat entre l'<a href="https://www.ademe.fr/">ADEME</a> et <a href="https://lafabriquedesmobilites.fr/">la Fabrique de Mobilités</a>, dans le cadre de l'<a href="https://xd.ademe.fr/">eXtrême Défi Mobilité</a>. Il consiste à tester 30 véhicules sur 16 territoires au total pour fin 2025.</p>
-                        <p>Ce tableau bord partage des statistiques générales sur les voyages à bord de ces véhicules, mesurées à partir de capteurs embarqués, ainsi que les expériences des testeurs issus de questionnaires.</p>
+                        <p>Ce tableau de bord partage des statistiques générales sur les voyages à bord de ces véhicules, mesurées à partir de capteurs embarqués, ainsi que les expériences des testeurs issus de questionnaires.</p>
+                        <p>Depuis juillet 2025, il affiche aussi les voyages d'autres expérimentations de l'eXtrême Défi Mobilités, notamment grace aux données partagées par <a href="https://www.invd.fr/">In'VD</a> et l'<a href="https://www.insa-toulouse.fr/">INSA</a>/<a href="https://www.laas.fr/">LAAS</a> à Toulouse.</p>
                         <h2 className="subtitle">
                             Vue d'ensemble {filterText}
                             <div style={{"float": "right"}}>
