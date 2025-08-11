@@ -13,7 +13,7 @@ export const modelPicturesMap = {
     "Maillon Mobility": "images/MaillonMobility.jpg",
     "Qbx": "images/Qbx.jpg",
     "La Bagnole": "images/LaBagnole.png",
-    "Vehlio": "images/Vehlio.jpg",
+    "Vhelio": "images/Vhelio.jpg",
 }
 
 export const locations = [
