@@ -121,6 +121,16 @@ interface SettingsContextType {
     setSettings: React.Dispatch<React.SetStateAction<Settings>>
 }
 
+interface VehicleHistoryType {
+    day: string,
+    "Licence plate": string,
+    Model: string,
+    location: string,
+    nb_trips: number,
+    total_distance_km: number,
+    average_speed_kmh: number
+}
+
 export {
     Settings,
     BilanDataType,
@@ -131,5 +141,6 @@ export {
     TripDistanceStatType,
     TripsStatsType,
     ModelTripStatType,
-    SettingsContextType
+    SettingsContextType,
+    VehicleHistoryType
 }

@@ -11,6 +11,7 @@ import Home from "./pages/Home"
 import Profile from "./pages/Profile"
 import Stats from "./pages/Stats"
 import Export from "./pages/Export"
+import Vehicles from "./pages/Vehicles"
 
 const SettingsContext = createContext<types.SettingsContextType>({
     settings: {
@@ -41,6 +42,7 @@ const App = () => {
                     <Route path="/export" element={<Export/>} />
                     <Route path="/stats/:location" element={<Stats/>} />
                     <Route path="/stats" element={<Stats/>} />
+                    <Route path="/vehicles" element={<Vehicles/>} />
                     <Route path="/:carnetIndex" element={<Home SettingsContext={SettingsContext}/>} />
                     <Route path="/" element={<Home SettingsContext={SettingsContext}/>} />
                 </Routes>

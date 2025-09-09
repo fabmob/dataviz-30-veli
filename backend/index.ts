@@ -519,6 +519,17 @@ app.get('/api/experiences', (req, res) => {
 })
 
 
+app.get('/api/vehicleStats/:licence_plate', (req, res) => {
+    const stmt = db.prepare(`
+        select date(StartTime) as day, "Licence plate", Model, location, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, avg(AvgSpeed) as average_speed_kmh
+        from trips_with_carnet_match 
+        where StartTime not null and location != 'En transit' and "Licence plate" = '${req.params.licence_plate}' and AvgSpeed > 5
+        group by day
+    `)
+    let rows = stmt.all()
+    res.json(rows)
+})
+
 app.all("/api/:any", function(_, res) {
     res.status(404).json({
         status: "Not found"

@@ -33,6 +33,9 @@ const NavBar = () => {
                     <Link to="/stats" className="navbar-item">
                         Statistiques
                     </Link>
+                    <Link to="/vehicles" className="navbar-item">
+                        Détails par VELI
+                    </Link>
                     <Link to="/export" className="navbar-item">
                         Export de données
                     </Link>

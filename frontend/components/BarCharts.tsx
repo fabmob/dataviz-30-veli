@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
+import {Chart, CategoryScale, LinearScale, TimeScale, Tooltip, Legend, BarElement} from 'chart.js'
+import 'chartjs-adapter-luxon'
+Chart.register(CategoryScale, LinearScale, TimeScale, Tooltip, Legend, BarElement)
 import { Bar } from 'react-chartjs-2'
-import {Chart, CategoryScale, LinearScale, Tooltip, Legend, BarElement} from 'chart.js'
-Chart.register(CategoryScale, LinearScale, Tooltip, Legend, BarElement)
 import * as types from "../types"
 
 
@@ -11,6 +12,7 @@ interface ChartData {
         label: string,
         data: number[],
         backgroundColor?: string
+        hidden?: boolean
     }[]
 }
 
@@ -130,7 +132,97 @@ const TripDistanceBarChart = ({ data } : { data: types.TripDistanceStatType}) =>
     )
 }
 
+const HistoryBarChart = ({ data, minDate } : { data: types.VehicleHistoryType[], minDate: string}) => {
+    const [chartData, setChartData] = useState<null | ChartData>(null)
+    const [shownDatasetIndex, setShownDatasetIndex] = useState(0)
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: "bottom" as "bottom",
+                onClick: (e, legendItem, legend) => {
+                    const index = legendItem.datasetIndex
+                    const ci = legend.chart
+
+                    // Hide all datasets except the clicked one
+                    ci.data.datasets.forEach((dataset, i) => {
+                        dataset.hidden = i !== index
+                    })
+                    ci.options.scales.y.title.text = ci.data.datasets[index].label
+                    ci.update()
+                    setShownDatasetIndex(index)
+                }
+            }
+        },
+        scales: {
+            x: {
+                type: "time" as const,
+                time: {
+                    unit: 'day' as const,
+                    displayFormats: {
+                        day: 'DD'
+                    },
+                    tooltipFormat: 'DD'
+                },
+                title: {
+                    display: true,
+                    text: 'Date'
+                },
+                min: minDate,
+                max: new Date().toISOString()
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: ['Nombre de trajets', 'Distance parcourue (km)', 'Vitesse moyenne (km/h)'][shownDatasetIndex]
+                }
+            }
+        }
+    }
+    useEffect(() => {
+        if (!data) return
+        let labels = data.map(d => d.day)
+        setChartData({
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Nombre de trajets',
+                    data: data.map(d => d.nb_trips),
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    hidden: shownDatasetIndex !== 0,
+                },
+                {
+                    label: 'Distance parcourue (km)',
+                    data: data.map(d => d.total_distance_km),
+                    backgroundColor: 'rgb(255, 206, 86)',
+                    hidden: shownDatasetIndex !== 1,
+                },
+                {
+                    label: 'Vitesse moyenne (km/h)',
+                    data: data.map(d => d.average_speed_kmh),
+                    backgroundColor: 'rgb(54, 162, 235)',
+                    hidden: shownDatasetIndex !== 2,
+                }
+            ]
+        })
+    }, [data]) 
+
+    return (
+        <div style={{height: "500px"}}>
+            {chartData && <Bar
+                width={500}
+                style={{margin: "auto"}}
+                options={chartOptions}
+                data={chartData}
+            />}
+        </div>
+    )
+}
+
 export default {
     TripModelBarChart,
-    TripDistanceBarChart
+    TripDistanceBarChart,
+    HistoryBarChart
 }

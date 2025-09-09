@@ -14,6 +14,22 @@ module.exports = {
   mode: "development",
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+        'chart.js': path.resolve(
+          __dirname,
+          'node_modules',
+          'chart.js',
+          'dist',
+          'chart.js'
+        ),
+        'chartjs-adapter-luxon': path.resolve(
+          __dirname,
+          'node_modules',
+          'chartjs-adapter-luxon',
+          'dist',
+          'chartjs-adapter-luxon.esm.js'
+        )
+    }
   },
   output: {
     filename: "bundle.js",
