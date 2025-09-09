@@ -4,7 +4,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build:dev": "tsc --watch --preserveWatchOutput",
-    "start:dev": "nodemon dist/index.js & webpack -w"
+    "start:dev": "nodemon dist/index.js & webpack -w",
+    "build": "tsc & webpack"
   },
   "keywords": [],
   "author": "TTalex",
