@@ -1,9 +1,15 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 import * as types from "../types"
 import { modelPicturesMap, locations } from "../constants"
 
 const SettingsModal = ({SettingsContext} : {SettingsContext: React.Context<types.SettingsContextType>}) => {
     const { settings, setSettings } = useContext(SettingsContext)
+    const [tempSettings, setTempSettings] = React.useState(settings)
+
+    useEffect(() => {
+        setTempSettings(settings)
+    }, [settings])
+    
     if (window.location.search.includes("embed=true")) {
         return null
     }
@@ -19,7 +25,7 @@ const SettingsModal = ({SettingsContext} : {SettingsContext: React.Context<types
                     <div className="field">
                         <label className="label">Territoire</label>
                         <div className="select">
-                            <select value={settings.location} onChange={(e) => setSettings({...settings, location: e.target.value})}>
+                            <select value={tempSettings.location} onChange={(e) => setTempSettings({...tempSettings, location: e.target.value})}>
                                 {locations.map((location, index) => <option key={index} value={location}>{location}</option>)}
                             </select>
                         </div>
@@ -27,7 +33,7 @@ const SettingsModal = ({SettingsContext} : {SettingsContext: React.Context<types
                     <div className="field">
                         <label className="label">VELI</label>
                         <div className="select">
-                            <select value={settings.model} onChange={(e) => setSettings({...settings, model: e.target.value})}>
+                            <select value={tempSettings.model} onChange={(e) => setTempSettings({...tempSettings, model: e.target.value})}>
                                 {Object.keys(modelPicturesMap).map((model, index) => <option key={index} value={model}>{model}</option>)}
                             </select>
                         </div>
@@ -35,12 +41,13 @@ const SettingsModal = ({SettingsContext} : {SettingsContext: React.Context<types
                     <div className="field">
                         <label className="label">Afficher uniquement les expériences avec un point noir géolocalisé</label>
                         <div className="select">
-                            <select value={settings.showOnlyPointNoir ? "true" : "false"} onChange={(e) => setSettings({...settings, showOnlyPointNoir: e.target.value === "true"})}>
+                            <select value={tempSettings.showOnlyPointNoir ? "true" : "false"} onChange={(e) => setTempSettings({...tempSettings, showOnlyPointNoir: e.target.value === "true"})}>
                                 <option value="false">Non</option>
                                 <option value="true">Oui</option>
                             </select>
                         </div>
                     </div>
+                    <button className="button is-primary" onClick={() => setSettings({...tempSettings, show: false})}>Appliquer</button>
                 </section>
             </div>
         </div>
