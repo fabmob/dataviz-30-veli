@@ -42,6 +42,9 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
         setCarnetIndex(carnetIndex)
         setTab("carnets")
     }
+    const onLocationClick = (location) => {
+        setSettings({...settings, location: location})
+    }
     for (let i = 0; i < stats.length; i++) {
         let bilanData = stats[i].carnetEntries.reduce((acc, carnetEntry) => {
             acc[carnetEntry.bilan] = (acc[carnetEntry.bilan] || 0) + 1
@@ -79,7 +82,7 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
                                 </button>
                             </div>
                         </h2>
-                        <HeatMap onMapMove={onMapMove} onMarkerClick={onMarkerClick} SettingsContext={SettingsContext}/>
+                        <HeatMap onMapMove={onMapMove} onMarkerClick={onMarkerClick} onLocationClick={onLocationClick} SettingsContext={SettingsContext}/>
                         <div className="tabs mt-4">
                             <ul>
                                 <li className={(tab == "stats" ? "is-active" : "")}><a onClick={() => setTab("stats")}>Statistiques générales des trajets traversant la zone</a></li>

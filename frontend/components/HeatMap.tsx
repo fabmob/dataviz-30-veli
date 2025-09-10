@@ -1,20 +1,27 @@
-import React, { useEffect, useRef, useState, useContext } from "react"
+import React, { useEffect, useRef, useState, useContext, useMemo } from "react"
 import { SettingsContextType } from "../types"
+
 // @ts-ignore
 const L = window.L
 
 interface HeatMapParamsTypes {
     onMapMove: (any) => void,
     onMarkerClick: (any) => void,
+    onLocationClick: (any) => void,
     SettingsContext: React.Context<SettingsContextType>
 }
-const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes) => {
+
+const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext}: HeatMapParamsTypes) => {
     const { settings } = useContext(SettingsContext)
     const location = settings.location
     const model = settings.model
     const showOnlyPointNoir = settings.showOnlyPointNoir
     const mapContainerRef = useRef<null | HTMLDivElement>(null)
-    const [map, setMap] = useState<any>(null)
+    const map = useRef<null | any>(null)
+    const objects = useRef({
+        "heatlayer": null as any,
+        "markers": [] as any[],
+    })
     const [bilanFilter, setBilanFilter] = useState({
         "Très positif": true,
         "Positif": true,
@@ -22,8 +29,35 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
         "Très négatif": true,
         "Non déclaré": true
     })
+
+    const addGeoJsonTerritoires = () => {
+        console.log("addGeoJsonTerritoires")
+        fetch("/geojsons/territoires.geojson").then(response => response.json()).then(data => {
+            map.current.createPane("geojsonPane")
+            map.current.getPane("geojsonPane").style.zIndex = 500
+            L.geoJSON(
+                data,
+                {                
+                    onEachFeature: (feature, layer) => {
+                        if (feature.properties && feature.properties.name) {
+                            layer.bindTooltip(feature.properties.name, { sticky: true })
+                        }
+                        layer.on('click', function(e) {
+                            onLocationClick(feature.properties.loc_name)
+                        })
+                    },
+                    pane: "geojsonPane",
+                    style: {
+                        "color": "#957777",
+                        "weight": 2,
+                        "fillOpacity": 0.3
+                    }
+                }
+            ).addTo(map.current)
+        })
+    }
     useEffect(() => {
-        if (!map) {
+        if (!map.current) {
             const sombre = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
                 attribution:'Fond de carte: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
             })
@@ -40,37 +74,40 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
             }
             const centerPoint = [46.2276, 2.2137]
             const zoomLevel = 5
-            try {
-                const initializedMap = L.map(mapContainerRef.current, { preferCanvas: true, layers: [default_basemap] }).setView(centerPoint, zoomLevel)
-                const layerControl = L.control.layers(baseMaps).addTo(initializedMap)
+            try {                
+                map.current = L.map(mapContainerRef.current, { preferCanvas: true, layers: [default_basemap] }).setView(centerPoint, zoomLevel)
+                const layerControl = L.control.layers(baseMaps).addTo(map.current)
                 
-                initializedMap._layerControl = layerControl
-                initializedMap.on('moveend', function() { 
-                    onMapMove(initializedMap.getBounds())
-               })
-                setMap(initializedMap)
+                map.current._layerControl = layerControl
+                map.current.on('moveend', function() { 
+                    onMapMove(map.current.getBounds())
+                })
                 
+                addGeoJsonTerritoires()
             } catch (error) {
-                
+                console.error(error)
             }
         }
 
-        return () => {
-            if (map) {
-                map.remove()
-                setMap(null)
-            }
-        }
+
     }, [])
     useEffect(() => {
-        let objects = {
-            "heatlayer": null as any,
-            "markers": [] as any[]
+        const cleanup = () => {
+            if (objects.current.heatlayer) {
+                objects.current.heatlayer.remove()
+                objects.current.heatlayer = null
+            }
+            for (let i = 0; i < objects.current.markers.length; i++) {
+                objects.current.markers[i].remove()
+            }
+            objects.current.markers = []
         }
+
         const fetchData = async () => {
             try {
                 let data = await (await fetch(`/api/heatmapdata?location=${location}&model=${model}`)).json()
-                objects.heatlayer = L.heatLayer(data.heatmapjson, {max: 10}).addTo(map)
+                cleanup()
+                objects.current.heatlayer = L.heatLayer(data.heatmapjson, {max: 10}).addTo(map.current)
                 for (let i = 0; i < data.carnetCoords.length; i++) {
                     let carnetCoord = data.carnetCoords[i]
                     if (settings.showOnlyPointNoir && !carnetCoord.isPointNoir) {
@@ -98,9 +135,9 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
                     if (!bilanFilter[carnetCoord.bilan]) {
                         continue
                     }
-                    objects.markers.push(L.marker([carnetCoord.lat, carnetCoord.lon], {icon: icon})
+                    objects.current.markers.push(L.marker([carnetCoord.lat, carnetCoord.lon], {icon: icon})
                         .bindTooltip(`<b>${carnetCoord.vehicule}</b><br/>${icon.options.html} ${carnetCoord.bilan}`)
-                        .addTo(map)
+                        .addTo(map.current)
                         .on('click', function(e) {
                             onMarkerClick(carnetCoord.carnetEntryIndex)
                         })
@@ -110,20 +147,12 @@ const HeatMap = ({onMapMove, onMarkerClick, SettingsContext}: HeatMapParamsTypes
                 console.log("data couldn't be fetched", error)
             }
         }
-        if (map) {
+
+        if (map.current) {
             fetchData()
         }
-        return () => {
-            if (objects.heatlayer) {
-                objects.heatlayer.remove()
-                objects.heatlayer = null
-            }
-            for (let i = 0; i < objects.markers.length; i++) {
-                objects.markers[i].remove()
-            }
-            objects.markers = []
-        }
-    }, [map, location, model, showOnlyPointNoir, bilanFilter])
+        return cleanup
+    }, [location, model, showOnlyPointNoir, bilanFilter])
 
     const editBilanFilter = (bilan) => {
         setBilanFilter({...bilanFilter, [bilan]: !bilanFilter[bilan]})
