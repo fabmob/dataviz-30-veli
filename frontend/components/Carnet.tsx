@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import * as types from "../types"
-import { modelPicturesMap } from "../constants"
+import { modelPicturesMap, wikiLinks } from "../constants"
 import MarkerMap from "./MarkerMap"
 import PanoramaxFrame from "./PanoramaxFrame"
 
@@ -150,7 +150,9 @@ const Carnet = ({carnetIndex, carnetEntry} : {carnetIndex?: string, carnetEntry?
                         </div> */}
                         <div className="card-content">
                             <div className="media-content">
-                                <p className="title is-4">{carnet.territoire}</p>
+                                <p className="title is-4">
+                                    <a href={wikiLinks[carnet.territoire]} title="En savoir plus sur l'expérimentation du territoire">{carnet.territoire}</a>
+                                </p>
                             </div>
 
                             <div className="content mt-4">
