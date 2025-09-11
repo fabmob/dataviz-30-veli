@@ -11,9 +11,10 @@ export const modelPicturesMap = {
     "Woodybus": "images/Woodybus.png",
     "MidiPile": "images/Midipile.png",
     "Maillon Mobility": "images/MaillonMobility.jpg",
-    "Qbx": "images/Qbx.jpg",
+    "Sorean": "images/Qbx.jpg",
     "La Bagnole": "images/LaBagnole.png",
     "Vhelio": "images/Vhelio.jpg",
+    "AMI": "images/AMI.png"
 }
 
 export const locations = [
@@ -91,4 +92,9 @@ export const VELIS = [
     {name: "WEEZ 5", licencePlate: "GV136CN"},
     {name: "WEEZ 6", licencePlate: "GV194CN"},
     {name: "Woodybus", licencePlate: "BCF2CBFBBC"},
+    {name: "Citroen AMI (In'VD)", licencePlate: "GR210JE"},
+    {name: "BIRO (In'VD)", licencePlate: "GS747FK"},
+    {name: "Sorean Qbx 1 (In'VD)", licencePlate: "W363MN"},
+    {name: "Sorean Qbx 2 (In'VD)", licencePlate: "W397MN"},
+    {name: "Sorean Qbx 3 (In'VD)", licencePlate: "W587MS"},
 ]
