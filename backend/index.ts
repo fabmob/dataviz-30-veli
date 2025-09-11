@@ -521,12 +521,18 @@ app.get('/api/experiences', (req, res) => {
 
 app.get('/api/vehicleStats/:licence_plate', (req, res) => {
     const stmt = db.prepare(`
-        select date(StartTime) as day, "Licence plate", Model, location, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, avg(AvgSpeed) as average_speed_kmh
+        select date(StartTime) as day, "Licence plate", Model, location, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, group_concat(AvgSpeed) as average_speed_concat
         from trips_with_carnet_match 
-        where StartTime not null and location != 'En transit' and "Licence plate" = '${req.params.licence_plate}' and AvgSpeed > 5
+        where StartTime not null and location != 'En transit' and "Licence plate" = '${req.params.licence_plate}'
         group by day
     `)
-    let rows = stmt.all()
+    let rows = stmt.all() as { day: string, "Licence plate": string, Model: string, location: string, nb_trips: number, total_distance_km: number, average_speed_concat?: string, average_speed_kmh: number }[]
+    rows = rows.map(row => {
+        const credibleSpeeds = row?.average_speed_concat?.split(',').map(s => parseFloat(s)).filter(s => s > 5) || []
+        row.average_speed_kmh = credibleSpeeds.reduce((acc, cur) => acc + cur, 0) / credibleSpeeds.length
+        delete row.average_speed_concat
+        return row
+    })
     res.json(rows)
 })
 

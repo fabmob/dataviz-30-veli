@@ -35,10 +35,11 @@ const Vehicles = () => {
         }
         setStatsFiltered(_statsFiltered)
         if (_statsFiltered) {
+            const statsFilteredWithoutInacurateSpeeds = _statsFiltered.filter(d => d.average_speed_kmh)
             setSums({
                 nb_trips: _statsFiltered.reduce((acc, cur) => acc + cur.nb_trips, 0),
                 total_distance_km: _statsFiltered.reduce((acc, cur) => acc + cur.total_distance_km, 0),
-                average_speed_kmh: (_statsFiltered.reduce((acc, cur) => acc + cur.average_speed_kmh, 0) / _statsFiltered.length) || 0
+                average_speed_kmh: (statsFilteredWithoutInacurateSpeeds.reduce((acc, cur) => acc + cur.average_speed_kmh, 0) / statsFilteredWithoutInacurateSpeeds.length) || 0
             })
         }
     }, [stats, lastNbDaysFilter])
