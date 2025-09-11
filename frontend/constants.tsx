@@ -36,6 +36,25 @@ export const locations = [
     "Toulouse"
 ]
 
+export const wikiLinks = {
+    "Avant Pays Savoyard": "https://wikixd.fabmob.io/wiki/Avant-pays_savoyard",
+    "CA du Grand Avignon": "https://wikixd.fabmob.io/wiki/Communaut%C3%A9_d%27Agglom%C3%A9ration_du_Grand_Avignon",
+    "Centre Hospitalier de Niort": "https://wikixd.fabmob.io/wiki/Centre_Hospitalier_de_Niort",
+    "CC 7 Vallées": "https://wikixd.fabmob.io/wiki/Communaut%C3%A9_de_communes_des_7_Vall%C3%A9es",
+    "CC Briançon": "https://wikixd.fabmob.io/wiki/Communaut%C3%A9_de_Communes_du_Brian%C3%A7onnais",
+    "CC Clunisois": "https://wikixd.fabmob.io/wiki/Communaut%C3%A9_de_communes_du_Clunisois",
+    "CC Grand Pic St Loup": "https://wikixd.fabmob.io/wiki/CC_Grand_Pic_Saint_Loup",
+    "Commune de Tressin": "https://wikixd.fabmob.io/wiki/Tressin",
+    "Commune des Mureaux": "https://wikixd.fabmob.io/wiki/Commune_Les_Mureaux",
+    "Commune du Teil": "https://wikixd.fabmob.io/wiki/Commune_Le_Teil",
+    "La Chapelle-Thouarault": "https://wikixd.fabmob.io/wiki/Commune_la_Chapelle-Thouarault",
+    "Lalouvesc": "https://wikixd.fabmob.io/wiki/Commune_de_Lalouvesc",
+    "Le Mans": "https://wikixd.fabmob.io/wiki/Le_Mans_M%C3%A9tropole",
+    "Loos en Gohelle": "https://wikixd.fabmob.io/wiki/Ville_de_Loos-en-Gohelle",
+    "PNR Grand Causses": "https://wikixd.fabmob.io/wiki/PNR_des_Grands_Causses",
+    "Toulouse": "https://wikixd.fabmob.io/wiki/INSA"
+}
+
 export const VELIS = [
     {name: "Acticycle 1", licencePlate: "ACTI0001"},
     {name: "Acticycle 2", licencePlate: "ACTI0002"},

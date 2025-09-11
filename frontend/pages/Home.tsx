@@ -5,7 +5,7 @@ import * as types from '../types'
 import HeatMap from "../components/HeatMap"
 import PieChart from "../components/PieChart"
 import Carnet from "../components/Carnet"
-import { modelPicturesMap } from "../constants"
+import { modelPicturesMap, wikiLinks } from "../constants"
 
 const Home = ({SettingsContext} : {SettingsContext: React.Context<types.SettingsContextType>}) => {
     const { settings, setSettings } = useContext(SettingsContext)
@@ -53,13 +53,7 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
         bilanData["Trajets sans bilan"] = stats[i].nbTrips - stats[i].carnetEntries.length
         stats[i].bilanData = bilanData
     }
-    let filterText = ""
-    if (settings.location && settings.location !== "Tous") {
-        filterText += `(${settings.location})`
-    }
-    if (settings.model && settings.model !== "Tous") {
-        filterText += `(${settings.model})`
-    }
+
     return (
         <div className="main">
             <section className="section">
@@ -75,10 +69,14 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
                         <div className="columns">
                             <div className="column" style={{"lineHeight": "40px"}}>
                                 <h2 className="subtitle">
-                                    Vue d'ensemble {filterText}
+                                    Vue d'ensemble 
+                                    {(settings.location && settings.location !== "Tous") ? 
+                                        <span> (<a href={wikiLinks[settings.location]} title="En savoir plus sur l'expérimentation du territoire">{settings.location}</a>)</span>
+                                        : ""}
+                                    {(settings.model && settings.model !== "Tous") ? ` (${settings.model})` : ""}
                                 </h2>
                             </div>
-                            <div className="column" style={{"lineHeight": "40px"}}>
+                            <div className="column is-narrow" style={{"lineHeight": "40px"}}>
                                 <div className="is-pulled-right">
                                     <i style={{fontSize: "16px", color: "rgb(171, 177, 191)", fontWeight: 400}}>Filtrer par territoire et VELI → </i>
                                     <button className="button" onClick={() => setSettings({...settings, show: true})}>
