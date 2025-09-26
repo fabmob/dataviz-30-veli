@@ -47,7 +47,7 @@ const EmbedMap = ({SettingsContext} : {SettingsContext: React.Context<types.Sett
     const veliUnselectedStyle = {opacity: "0.5", cursor: "pointer"}
 
     const isEmbed = window.location.search.includes("embed=true")
-    const exportIframeText = `<iframe src="https://30veli.fabmob.io/stats/${encodeURI(statsLocation)}?embed=true" width="100%" height="600px" frameborder="0" scrolling="no"></iframe>`
+    const exportIframeText = `<iframe src="https://30veli.fabmob.io/embedmap/${encodeURI(statsLocation)}?embed=true" width="100%" height="800px" frameborder="0" scrolling="no"></iframe>`
     
     return (
         <div className="main">

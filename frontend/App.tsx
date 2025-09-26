@@ -44,8 +44,8 @@ const App = () => {
                     <Route path="/stats/:location" element={<Stats/>} />
                     <Route path="/stats" element={<Stats/>} />
                     <Route path="/vehicles" element={<Vehicles/>} />
-                    <Route path="/embedMap" element={<EmbedMap SettingsContext={SettingsContext}/>} />
-                    <Route path="/embedMap/:location" element={<EmbedMap SettingsContext={SettingsContext}/>} />
+                    <Route path="/embedmap" element={<EmbedMap SettingsContext={SettingsContext}/>} />
+                    <Route path="/embedmap/:location" element={<EmbedMap SettingsContext={SettingsContext}/>} />
                     <Route path="/:carnetIndex" element={<Home SettingsContext={SettingsContext}/>} />
                     <Route path="/" element={<Home SettingsContext={SettingsContext}/>} />
                 </Routes>
