@@ -8,10 +8,11 @@ interface HeatMapParamsTypes {
     onMapMove: (any) => void,
     onMarkerClick: (any) => void,
     onLocationClick: (any) => void,
-    SettingsContext: React.Context<SettingsContextType>
+    SettingsContext: React.Context<SettingsContextType>,
+    hideGeoJsonTerritoires?: boolean
 }
 
-const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext}: HeatMapParamsTypes) => {
+const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext, hideGeoJsonTerritoires}: HeatMapParamsTypes) => {
     const { settings } = useContext(SettingsContext)
     const location = settings.location
     const model = settings.model
@@ -31,7 +32,6 @@ const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext}: H
     })
 
     const addGeoJsonTerritoires = () => {
-        console.log("addGeoJsonTerritoires")
         fetch("/geojsons/territoires.geojson").then(response => response.json()).then(data => {
             map.current.createPane("geojsonPane")
             map.current.getPane("geojsonPane").style.zIndex = 500
@@ -83,7 +83,9 @@ const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext}: H
                     onMapMove(map.current.getBounds())
                 })
                 
-                addGeoJsonTerritoires()
+                if (!hideGeoJsonTerritoires) {
+                    addGeoJsonTerritoires()
+                }
             } catch (error) {
                 console.error(error)
             }
