@@ -13,6 +13,7 @@ import Stats from "./pages/Stats"
 import Export from "./pages/Export"
 import Vehicles from "./pages/Vehicles"
 import EmbedMap from "./pages/EmbedMap"
+import Disques from "./pages/Disques"
 
 const SettingsContext = createContext<types.SettingsContextType>({
     settings: {
@@ -44,6 +45,7 @@ const App = () => {
                     <Route path="/stats/:location" element={<Stats/>} />
                     <Route path="/stats" element={<Stats/>} />
                     <Route path="/vehicles" element={<Vehicles/>} />
+                    <Route path="/disques" element={<Disques/>} />
                     <Route path="/embedmap" element={<EmbedMap SettingsContext={SettingsContext}/>} />
                     <Route path="/embedmap/:location" element={<EmbedMap SettingsContext={SettingsContext}/>} />
                     <Route path="/:carnetIndex" element={<Home SettingsContext={SettingsContext}/>} />
