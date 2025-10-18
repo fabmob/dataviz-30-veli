@@ -80,7 +80,7 @@ const Stats = () => {
                                 </div>
                             </div>
                         </div>}
-                        {isEmbed && <p><a href="https://30veli.fabmob.io/"><i className="fa fa-link"></i> Consultez le site de l'expérimentation pour en savoir plus.</a></p>}
+                        {isEmbed && <p><a href="https://30veli.fabmob.io/" target="_blank"><i className="fa fa-link"></i> Consultez le site de l'expérimentation pour en savoir plus.</a></p>}
                     </div>
                 </div>
             </section>
