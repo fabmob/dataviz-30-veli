@@ -14,7 +14,8 @@ export const modelPicturesMap = {
     "Sorean": "images/Qbx.jpg",
     "La Bagnole": "images/LaBagnole.png",
     "Vhelio": "images/Vhelio.jpg",
-    "AMI": "images/AMI.png"
+    "AMI": "images/AMI.png",
+    "Speedbike": "images/Speedbike.jpg"
 }
 
 export const locations = [

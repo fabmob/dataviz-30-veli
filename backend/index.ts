@@ -490,9 +490,9 @@ app.get('/api/experiences', (req, res) => {
     }
     let result : ExperiencesType = {}
     for (let i = 0; i < rows.length; i++) {
-        if (!rows[i].Model) continue
-        if (!result[rows[i].Model]) {
-            result[rows[i].Model] = {
+        if (!rows[i].vehicule) continue
+        if (!result[rows[i].vehicule]) {
+            result[rows[i].vehicule] = {
                 totalDistanceKm: 0,
                 nbTrips: 0,
                 bilanData: {
@@ -504,10 +504,10 @@ app.get('/api/experiences', (req, res) => {
                 carnetEntries: []
             }
         }
-        result[rows[i].Model].totalDistanceKm += rows[i].totalDistanceKm
-        result[rows[i].Model].nbTrips += rows[i].nbTrips
-        result[rows[i].Model].bilanData[rows[i].bilan] += 1
-        result[rows[i].Model].carnetEntries.push(rows[i])
+        result[rows[i].vehicule].totalDistanceKm += rows[i].totalDistanceKm
+        result[rows[i].vehicule].nbTrips += rows[i].nbTrips
+        result[rows[i].vehicule].bilanData[rows[i].bilan] += 1
+        result[rows[i].vehicule].carnetEntries.push(rows[i])
     }
     if (req.query.format === "csv") {
         res.setHeader('Content-Type', 'text/csv')
