@@ -97,7 +97,7 @@ const Desc = ({description}) => {
     )
 }
 const Disques = () => {
-    const [location, setLocation] = useState("Le Teil")
+    const [location, setLocation] = useState("Commune du Teil")
     const [vehicule, setVehicule] = useState("Urbaner")
     const [evaluations, setEvaluations] = useState([])
 
