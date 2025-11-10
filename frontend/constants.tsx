@@ -9,13 +9,15 @@ export const modelPicturesMap = {
     "Urbaner": "images/Urbaner.jpeg",
     "WEEZ": "images/WEEZ.png",
     "Woodybus": "images/Woodybus.png",
-    "MidiPile": "images/Midipile.png",
+    "Midipile": "images/Midipile.png",
     "Maillon Mobility": "images/MaillonMobility.jpg",
     "Sorean": "images/Qbx.jpg",
     "La Bagnole": "images/LaBagnole.png",
     "Vhelio": "images/Vhelio.jpg",
     "AMI": "images/AMI.png",
-    "Speedbike": "images/Speedbike.jpg"
+    "Speedbike": "images/Speedbike.jpg",
+    "Galibot": "images/Galibot.png",
+    "BOB": "images/Bob_sanka_cycle.jpg",
 }
 
 export const locations = [
@@ -35,6 +37,8 @@ export const locations = [
     "Lalouvesc",
     "Le Mans",
     "Loos en Gohelle",
+    "Loos les Lilles",
+    "PETR Sud Lozère",
     "PNR Grand Causses",
     "Toulouse"
 ]
@@ -55,7 +59,8 @@ export const wikiLinks = {
     "Le Mans": "https://wikixd.fabmob.io/wiki/Le_Mans_M%C3%A9tropole",
     "Loos en Gohelle": "https://wikixd.fabmob.io/wiki/Ville_de_Loos-en-Gohelle",
     "PNR Grand Causses": "https://wikixd.fabmob.io/wiki/PNR_des_Grands_Causses",
-    "Toulouse": "https://wikixd.fabmob.io/wiki/INSA"
+    "Toulouse": "https://wikixd.fabmob.io/wiki/INSA",
+    "PETR Sud Lozère": "https://wikixd.fabmob.io/wiki/V%C3%A9lis_dans_le_PETR_Loz%C3%A8re"
 }
 
 export const VELIS = [
