@@ -67,6 +67,7 @@ export const VELIS = [
     {name: "Acticycle 1", licencePlate: "ACTI0001"},
     {name: "Acticycle 2", licencePlate: "ACTI0002"},
     {name: "Acticycle 3", licencePlate: "ACTI0003"},
+    {name: "Acticycle 4", licencePlate: "ACTI0004"},
     {name: "BIRO 1", licencePlate: "GB418VP"},
     {name: "BIRO 2", licencePlate: "GD483SR"},
     {name: "BIRO 3", licencePlate: "GD740SR"},
