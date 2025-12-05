@@ -189,7 +189,7 @@ const getAverageLabel = (i, j, dlabels) => {
 
 const Disque = ({evaluations}: {evaluations: string[]}) => {
   const dataLabels = evaluations.map(e => {
-    const label = e.toLowerCase()
+    const label = e.toLowerCase().trim()
     return colors[label] ? label : "N/A"
   })
   const criteresDataLabels = [

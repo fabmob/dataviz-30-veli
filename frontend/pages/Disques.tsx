@@ -23,9 +23,9 @@ const evaluationsData = {
     },
     "Grand Pic Saint Loup": {
         "vehicles": {
-            "BIRO": ["","","","moyen","moyen","moyen","moyen","","fort","","Fort","","","","","Moyen","","","","","","","Fort","","Fort","Moyen","Fort","moyen","moyen","fort","fort","faible","faible","","","Fort"],
-            "WEEZ": ["","","","moyen","moyen","moyen","fort","","fort","","Faible","","","","","Moyen","","","","","","","Fort","","Fort","Moyen","Fort","moyen","moyen","fort","fort","faible","moyen","","",""],
-            "Urbaner": ["","","","moyen","moyen","moyen","faible","","fort","","Moyen","","","","","Faible","","","","","","","Fort","","Fort","Moyen","Fort","moyen","moyen","fort","fort","moyen","Faible","","","fort"],
+            "BIRO": ["Fort","Faible","Moyen","Moyen","moyen","Moyen","Moyen","Moyen","Fort","Faible","Fort","Moyen","Faible","Fort","Moyen","Moyen","Moyen","Moyen","Moyen","Moyen","Fort","Fort","Fort","Fort","Fort","Moyen","Fort","moyen","moyen","fort","fort","faible","faible","","","Fort"],
+            "WEEZ": ["Fort","Faible","Moyen","moyen","moyen","moyen","fort","Fort","fort","Fort","Faible","Moyen","Faible","Moyen","Moyen","Moyen","Fort","Fort","Fort","Moyen","Fort","Fort","Fort","Fort","Fort","Moyen","Fort","moyen","moyen","fort","fort","faible","moyen","","","fort"],
+            "Urbaner": ["Fort","Faible","Moyen","moyen","moyen","moyen","faible","Fort","fort","Faible","Moyen","Fort","Faible","Moyen","Faible","Faible","Fort","faible","Fort","Moyen","Moyen","Faible","Fort","Fort","Fort","Moyen","Fort","moyen","moyen","fort","fort","moyen","Faible","","","fort"],
         },
         "desc": `Territoire : Communauté de Communes de Grand Pic Saint Loup
             Région : Occitanie
@@ -40,10 +40,10 @@ const evaluationsData = {
     },
     "CC Clunisois": {
         "vehicles": {
-            "BIRO": ["","","","faible","Moyen","Fort","Moyen","","moyen","","faible","","","","","Moyen","","","","","","","Fort","","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","Moyen","Faible","","","Fort",],
-            "WEEZ": ["","","","faible","Moyen","Fort","Moyen","","moyen","","faible","","","","","Fort","","","","","","","Fort","","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","faible","faible","","","Fort"],
-            "Urbaner": ["","","","faible","Moyen","Fort","Faible","","moyen","","faible","","","","","moyen","","","","","","","Fort","","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","Fort","faible","","","Fort"],
-            "Formidable": ["","","","faible","Moyen","Fort","Moyen","","moyen","","faible","","","","","moyen","","","","","","","Fort","","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","fort","faible","","","Fort"],
+            "BIRO": ["Moyen","Faible","Fort","faible","Moyen","Fort","Moyen","Moyen","moyen","Moyen","faible","Moyen","Moyen","Moyen","Moyen","Moyen","Moyen","Moyen","Faible","Moyen","Fort","Fort","Fort","Faible ","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","Moyen","Faible","","","Fort"],
+            "WEEZ": ["Moyen","Faible","Moyen","faible","Moyen","Fort","Moyen","Fort","Moyen","Moyen","faible","Moyen","Moyen","Faible","Moyen","Fort","Moyen","Moyen","Faible","Moyen","Fort","Faible","Fort","Faible","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","faible","faible","","","Fort"],
+            "Urbaner": ["Moyen","Faible","Moyen","Faible","Moyen","Fort","Faible","Fort","moyen","Faible","Faible","Faible","Moyen","Moyen","Moyen","Moyen","Moyen","Moyen","Fort","Moyen","Moyen","Fort","Fort","Faible","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","Fort","Faible","","","Fort"],
+            "Formidable": ["Moyen","Faible","Moyen","faible","Moyen","Fort","Moyen","Fort","moyen","Fort","faible","Moyen","Moyen","Moyen","Moyen","Moyen","Moyen","Moyen","Fort","Moyen","Moyen","Fort","Fort","Faible","Moyen","Fort","moyen","moyen","Moyen","moyen","fort","fort","faible","","","Fort"],
         },
         "desc": `Territoire : Communauté de communes du Clunisois
             Région : Bourgogne Franche Comté
@@ -59,7 +59,7 @@ const evaluationsData = {
     },
     "Avant Pays Savoyard": {
         "vehicles": {
-            "Acticyle": ["","","","moyen","moyen","fort","moyen","","","","moyen","","","","","fort","","","","","","","fort","","moyen","moyen","fort","faible","","moyen","fort","fort","","","","faible"],
+            "Acticyle": ["Fort","Moyen","Fort","Moyen","Moyen","fort","Moyen","Fort","","Faible","moyen","","Fort","Fort","Faible","Fort","Moyen","","Moyen","","Moyen","Moyen","Fort","","Moyen","Moyen","Fort","Faible","","Moyen","Fort","Fort","","","",""],
         },
         "desc": `Territoire : Avant Pays Savoyard
             Région : Auvergne-Rhône-Alpes
@@ -72,7 +72,86 @@ const evaluationsData = {
             Parties prenantes du projet : SMAPS, Asso Vélo Solaire Pour Tous, ACT 4 Future, Mairie de St-Genix Les Villages, Agence écomobilité Savoie-Mont-Blanc
             Fiche wiki pour savoir plus : https://wikixd.fabmob.io/wiki/Avant-pays_savoyard
         `
-    }
+    },
+    "CC Briançon": {
+        "vehicles": {
+            "WEEZ": ["Fort","Moyen","Moyen","","","Faible","Faible","Fort","Fort","Fort","Fort","Moyen","","Faible","Fort","Fort","Fort","Faible","Moyen","Faible","Moyen","Faible","Moyen","","","Moyen","Faible","Faible","","","Moyen"],
+            "La Bagnole": ["Faible","Fort","Fort","Faible","Moyen","Fort","Fort","Fort","","Fort","Fort","Faible","Moyen","Moyen","Moyen","Fort","Moyen","","Moyen","Fort","Moyen","Fort","Faible","Moyen","faible","moyen","faible","moyen","","","moyen","Moyen","faible","","","moyen"]
+        },
+        "desc": `Territoire : Communauté de communes du Briançonnais
+            Région : Provence-Alpes-Côte d’Azur
+            Zone : Rural et Montagnard
+            Dénivelés : forts
+            Periode d’expérimentation : janvier - décembre 2025
+            Vélis testés : Weez et Bagnole
+            Cas d’usage testés : Trajets proffessionels des agents communaux, déplacement du quotidien des habitants volontaires.
+            Profil d’usagers : Actifs et retraités
+            Parties prenantes du projet : Commune de Villard-St-Pancrace, Commune de Montgenèvre, Commune de Puy-Saint-André et la CC de Briançonnais
+
+            Fiche wiki pour savoir plus : https://wikixd.fabmob.io/wiki/Communauté_de_Communes_du_Briançonnais
+        `
+    },
+    "La Chapelle-Thouarault": {
+        "vehicles": {
+            "WEEZ": ["Fort","Fort","Fort","faible","fort","Moyen","Fort","Moyen","","Fort","Faible","Moyen","Faible","Moyen","","Moyen","Moyen","Moyen","Moyen","Moyen","Fort","Fort","fort","Faible","moyen","moyen","faible","faible","","faible","fort","faible","faible","","","moyen"],
+            "Urbaner": ["Fort","Moyen","Fort","moyen","fort","Moyen","Moyen","Moyen","","Fort","moyen","Faible","Moyen","Fort","","Moyen","Faible","","Moyen","Faible","Faible","Fort","Fort","Faible","Moyen","Moyen","Faible","Faible","","faible","fort","fort","faible","","","moyen"]
+        },
+        "desc": ``
+    },
+    "CC 7 Vallées": {
+        "vehicles": {
+            "Galibot": ["Moyen","faible","Fort","moyen","faible","moyen","fort","Fort","faible","","faible","faible","Moyen","fort","Moyen","fort","moyen","Moyen","moyen","moyen","moyen","Fort","moyen","","moyen","fort","fort","moyen","","faible","fort","moyen","","","","faible"],
+            "Urbaner": ["moyen","moyen","fort ","moyen","moyen","moyen","moyen","fort ","moyen","Moyen","fort","fort ","fort ","moyen","","faible","Moyen","Moyen","fort ","Moyen","moyen","fort ","moyen","fort ","moyen","fort","fort","moyen","","faible","fort","moyen","","","","faible"]
+        },
+        "desc": ``
+    },
+    "Commune des Mureaux": {
+        "vehicles": {
+            "Urbaner": ["Moyen","fort","","moyen","fort","moyen","faible","Fort","","Faible","moyen","Faible","fort ","fort ","Faible","moyen","moyen","faible","Fort ","faible","Moyen","Fort","fort","Faible","moyen","moyen","fort","fort","moyen","faible","fort","fort","","","","fort"],
+            "BIRO": ["moyen","fort","fort","moyen","fort","moyen","moyen","Faible ","","Faible ","faible","Faible ","Faible ","Fort","Moyen","faible","moyen","moyen","Faible ","moyen","?","Fort","fort","Faible","moyen","moyen","fort","fort","moyen","faible","fort","fort","","","","fort"],
+            "WEEZ": ["moyen","fort","Fort","moyen","fort","moyen","fort","moyen","","Moyen","moyen","moyen","moyen","fort","Fort","fort","moyen","fort","Fort","Fort","","Fort","fort","Faible","moyen","moyen","fort","fort","moyen","faible","fort","moyen","","","","fort"],
+            "Karbikes": ["moyen","Fort","Moyen","moyen","fort","moyen","moyen","Fort","","Faible","fort","Fort","Fort","Fort","Moyen","fort","moyen","moyen","Faible","faible","Moyen","Fort","fort","Faible","moyen","moyen","fort","fort","moyen","faible","fort","fort","","","","fort"],
+        },
+        "desc": ``
+    },
+    "PNR Grand Causses": {
+        "vehicles": {
+            "WEEZ": ["Fort","Faible","Fort","","","","","Fort","","Fort ","Fort ","Moyen","Moyen","Fort ","Fort ","","Fort ","","Moyen","Fort ","Fort ","Fort ","","Fort ","","","","","","","","","","","",""],
+            "BIRO": ["FORT","Faible","Fort","","","","moyen","Fort","","Moyen","Fort","Fort","Moyen","Moyen","Moyen","fort","Moyen","","Faible","Moyen","Fort","Fort","fort","Fort","moyen","moyen","fort","fort","","fort","fort","","","","",""],
+            "Acticyle": ["FORT","Faible","Moyen","","","","fort","Moyen","","Fort","Moyen","Faible","Moyen","Fort","Faible","Moyen","","","","","","","fort","Fort","moyen","moyen","fort","fort","","fort","fort","","","","","",],
+            "Podbike": ["FORT","Faible","Faible","","","","faible","Fort","","Moyen","Faible","Faible","Moyen","Moyen","Faible","fort","Faible","faible","Fort","Faible","","","fort","Fort","moyen","moyen","fort","fort","","fort","fort","","","","",""],
+            "Karbikes": ["FORT","Faible","Moyen","Moyen","fort","fort","moyen","Fort","","Fort","Moyen","Faible","Moyen","Fort","Faible","fort","Fort","","Faible","Moyen","Faible","Moyen","fort","Fort","moyen","moyen","fort","fort","","fort","fort","","","","",""],
+        },
+        "desc": ``
+    },
+    "Loos en Gohelle": {
+        "vehicles": {
+            "Karbikes": ["","","","moyen","fort","moyen","fort","","moyen","","faible","","","","","fort","","","","","","","moyen","","fort","moyen","fort","moyen","","faible","fort","fort","","","","",],
+        },
+        "desc": ``
+    },
+    "Centre Hospitalier de Niort": {
+        "vehicles": {
+            "WEEZ": ["fort","","fort","moyen","fort","moyen","fort","faible","","","faible","","fort","fort","fort","fort","","","faible","moyen","moyen","","fort","","moyen","faible","fort","faible","moyen","faible","fort","","","","","moyen"],
+            "Maillon Mobility": ["fort","","fort","moyen","fort","moyen","faible","moyen","","faible","moyen","","moyen","fort","moyen","moyen","moyen","moyen","moyen","fort","","","fort","moyen","moyen","faible","fort","faible","moyen","faible","fort","","","","","moyen",],
+        },
+        "desc": ``
+    },
+    "Le Mans": {
+        "vehicles": {
+            "WEEZ": ["","","","faible","faible","moyen","fort","","","","faible","","","","","moyen","","","","","","","moyen","","moyen","moyen","moyen","moyen","","faible","moyen","faible","","","","faible",],
+            "Urbaner": ["","","","faible","faible","moyen","moyen","","","","faible","","","","","moyen","","moyen","","","","","moyen","","moyen","moyen","moyen","moyen","","faible","moyen","moyen","","","","faible",],
+            "Maillon Mobility": ["","","","faible","faible","moyen","","","","","moyen","","","","","fort","","","","","","","moyen","","moyen","moyen","moyen","moyen","","faible","moyen","moyen","","","","faible",],
+        },
+        "desc": ``
+    },
+    "CA du Grand Avignon": {
+        "vehicles": {
+            "Karbikes": ["","","","fort","fort","fort","fort","","","","moyen","","","","","fort","","","","","","","fort","","fort","moyen","fort","fort","","moyen","fort","fort","","","","moyen",],
+            "Maillon Mobility": ["","","","fort","fort","fort","fort","","","","moyen","","","","","moyen","","","","","","","fort","","fort","moyen","fort","fort","","moyen","fort","fort","","","","moyen",],
+        },
+        "desc": ``
+    },
 }
 const Select = ({options, selected, onChange}) => {
     return (
