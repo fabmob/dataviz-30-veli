@@ -132,9 +132,19 @@ const TripDistanceBarChart = ({ data } : { data: types.TripDistanceStatType}) =>
     )
 }
 
-const HistoryBarChart = ({ data, minDate } : { data: types.VehicleHistoryType[], minDate: string}) => {
+const HistoryBarChart = ({ data, minDate, maxDate } : { data: types.VehicleHistoryType[], minDate: Date, maxDate: Date}) => {
     const [chartData, setChartData] = useState<null | ChartData>(null)
     const [shownDatasetIndex, setShownDatasetIndex] = useState(0)
+    const sanitizeDate = (date: Date) => {
+        const dstr = date.toISOString()
+        if (dstr < "2023-01-01") {
+            return "2023-01-01"
+        }
+        if (dstr > new Date().toISOString()) {
+            return new Date().toISOString()
+        }
+        return dstr
+    }
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -170,16 +180,23 @@ const HistoryBarChart = ({ data, minDate } : { data: types.VehicleHistoryType[],
                     display: true,
                     text: 'Date'
                 },
-                min: minDate,
-                max: new Date().toISOString()
+                min: sanitizeDate(minDate),
+                max: sanitizeDate(maxDate)
             },
             y: {
                 title: {
                     display: true,
-                    text: ['Nombre de trajets', 'Distance parcourue (km)', 'Vitesse moyenne (km/h)'][shownDatasetIndex]
+                    text: ['Nombre de trajets', 'Distance parcourue (km)', 'Vitesse moyenne (km/h)', 'Score bilan (1-4)'][shownDatasetIndex]
                 }
             }
         }
+    }
+    const bilanRank = {
+        'N/A': 0,
+        'Très négatif': 1,
+        'Négatif': 2,
+        'Positif': 3,
+        'Très positif': 4,
     }
     useEffect(() => {
         if (!data) return
@@ -204,6 +221,12 @@ const HistoryBarChart = ({ data, minDate } : { data: types.VehicleHistoryType[],
                     data: data.map(d => d.average_speed_kmh),
                     backgroundColor: 'rgb(54, 162, 235)',
                     hidden: shownDatasetIndex !== 2,
+                },
+                {
+                    label: 'Score bilan (1-4)',
+                    data: data.map(d => bilanRank[d.most_frequent_bilan]),
+                    backgroundColor: 'rgb(0, 209, 178)',
+                    hidden: shownDatasetIndex !== 3,
                 }
             ]
         })

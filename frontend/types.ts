@@ -128,7 +128,8 @@ interface VehicleHistoryType {
     location: string,
     nb_trips: number,
     total_distance_km: number,
-    average_speed_kmh: number
+    average_speed_kmh: number,
+    most_frequent_bilan: string
 }
 
 export {

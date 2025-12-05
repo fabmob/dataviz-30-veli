@@ -13,7 +13,9 @@ const Vehicles = () => {
     const [sums, setSums] = React.useState({ nb_trips: 0, total_distance_km: 0, average_speed_kmh: 0 })
     const [licencePlate, setLicencePlate] = React.useState("GB418VP")
     const [lastNbDaysFilter, setLastNbDaysFilter] = React.useState(14)
-    const [minDate, setMinDate] = React.useState(new Date().toISOString())
+    const [minDate, setMinDate] = React.useState(new Date("2023-01-01"))
+    const [shiftedMinDate, setShiftedMinDate] = React.useState(new Date("2023-01-01"))
+    const [maxDate, setMaxDate] = React.useState(new Date())
     React.useEffect(() => {
         const fetchData = async () => {
             const stats = await fetch('/api/vehicleStats/' + licencePlate)
@@ -23,16 +25,21 @@ const Vehicles = () => {
         fetchData()
     }, [licencePlate])
     React.useEffect(() => {
-        let _statsFiltered
-        if (stats && lastNbDaysFilter > 0) {
+        if (lastNbDaysFilter > 0) {
             let startDate = new Date()
             startDate.setDate(startDate.getDate() - lastNbDaysFilter)
-            _statsFiltered = stats.filter(d => d.day > startDate.toISOString())
-            setMinDate(startDate.toISOString())
+            setMinDate(startDate)
         } else {
-            _statsFiltered = stats
-            setMinDate("")
+            setMinDate(new Date("2023-01-01"))
         }
+    }, [lastNbDaysFilter])
+    React.useEffect(() => {
+        if (!stats) return
+        // Shift date by one, since min excludes first day
+        let shiftedMinDate = new Date(minDate.toISOString())
+        shiftedMinDate.setDate(shiftedMinDate.getDate() - 1)
+        setShiftedMinDate(shiftedMinDate)
+        let _statsFiltered = stats.filter(d => d.day > shiftedMinDate.toISOString() && d.day < maxDate.toISOString())
         setStatsFiltered(_statsFiltered)
         if (_statsFiltered) {
             const statsFilteredWithoutInacurateSpeeds = _statsFiltered.filter(d => d.average_speed_kmh)
@@ -42,7 +49,21 @@ const Vehicles = () => {
                 average_speed_kmh: (statsFilteredWithoutInacurateSpeeds.reduce((acc, cur) => acc + cur.average_speed_kmh, 0) / statsFilteredWithoutInacurateSpeeds.length) || 0
             })
         }
-    }, [stats, lastNbDaysFilter])
+    }, [stats, minDate, maxDate])
+    const trySetMinDate = (datestr: string) => {
+        const date = new Date(datestr)
+        if (isNaN(date.getTime())) {
+            return
+        }
+        setMinDate(date)
+    }
+    const trySetMaxDate = (datestr: string) => {
+        const date = new Date(datestr)
+        if (isNaN(date.getTime())) {
+            return
+        }
+        setMaxDate(date)
+    }
     return (
         <div className="main">
             <section className="section">
@@ -65,6 +86,16 @@ const Vehicles = () => {
                                     <option value={30}>30 derniers jours</option>
                                     <option value={0}>Depuis le début</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div style={{"lineHeight": "40px"}}>
+                            Date début 
+                            <div className="select ml-2 mr-2">
+                                <input type="date" className="input" value={minDate.toISOString().split("T")[0]} onChange={(e) => trySetMinDate(e.target.value)} />
+                            </div>
+                            Date fin 
+                            <div className="select ml-2 mr-2">
+                                <input type="date" className="input" value={maxDate.toISOString().split("T")[0]} onChange={(e) => trySetMaxDate(e.target.value)} />
                             </div>
                         </div>
                         {stats && stats.length && <div className="mt-4">
@@ -105,7 +136,7 @@ const Vehicles = () => {
                         </div>
                         }
                         {statsFiltered && <div className="mt-4">
-                            <BarCharts.HistoryBarChart data={statsFiltered} minDate={minDate} />
+                            <BarCharts.HistoryBarChart data={statsFiltered} minDate={shiftedMinDate} maxDate={maxDate}/>
                         </div>}
                     </div>
                 </div>

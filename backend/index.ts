@@ -518,19 +518,29 @@ app.get('/api/experiences', (req, res) => {
     }
 })
 
+const getMostFrequentBilan = (bilans: string[]) => {
+  if (bilans.length === 0) return "N/A"
+  const mostFrequent = Array.from(new Set(bilans)).reduce((prev, curr) =>
+    bilans.filter(el => el === curr).length > bilans.filter(el => el === prev).length ? curr : prev
+  ) as string
+  return mostFrequent
+}
 
 app.get('/api/vehicleStats/:licence_plate', (req, res) => {
     const stmt = db.prepare(`
-        select date(StartTime) as day, "Licence plate", Model, location, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, group_concat(AvgSpeed) as average_speed_concat
+        select date(StartTime) as day, "Licence plate", Model, location, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, group_concat(AvgSpeed) as average_speed_concat, group_concat(bilan) as bilan_concat
         from trips_with_carnet_match 
         where StartTime not null and location != 'En transit' and "Licence plate" = '${req.params.licence_plate}'
         group by day
     `)
-    let rows = stmt.all() as { day: string, "Licence plate": string, Model: string, location: string, nb_trips: number, total_distance_km: number, average_speed_concat?: string, average_speed_kmh: number }[]
+    let rows = stmt.all() as { day: string, "Licence plate": string, Model: string, location: string, nb_trips: number, total_distance_km: number, average_speed_concat?: string, bilan_concat?: string, average_speed_kmh: number, most_frequent_bilan: string }[]
     rows = rows.map(row => {
         const credibleSpeeds = row?.average_speed_concat?.split(',').map(s => parseFloat(s)).filter(s => s > 5) || []
         row.average_speed_kmh = credibleSpeeds.reduce((acc, cur) => acc + cur, 0) / credibleSpeeds.length
         delete row.average_speed_concat
+        const bilans = row?.bilan_concat?.split(',') || []
+        row.most_frequent_bilan = getMostFrequentBilan(bilans)
+        delete row.bilan_concat
         return row
     })
     res.json(rows)
