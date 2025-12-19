@@ -270,6 +270,7 @@ const Carnet = ({carnetIndex, carnetEntry} : {carnetIndex?: string, carnetEntry?
                         <span className={getRessentiClassName(carnet.difficulte_autre)}>Autre: {carnet.difficulte_autre}</span>
                     </div>}
                     {carnet.tourisme_difficulte_detail && <p style={{whiteSpace: "pre-wrap"}}>{carnet.tourisme_difficulte_detail}</p>}
+                    {carnet.difficultes_details && <p style={{whiteSpace: "pre-wrap"}}>{carnet.difficultes_details}</p>}
                     {(carnet.point_noir_1 || carnet.point_noir_2) && <p className="title is-4">Points noirs</p>}
                     {(carnet.point_noir_1 || carnet.point_noir_2) && <div className="columns">
                         <div className="column">

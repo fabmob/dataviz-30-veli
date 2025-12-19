@@ -54,6 +54,7 @@ interface CarnetType {
     difficulte_vehicule: number,
     difficulte_comportement: number,
     difficulte_autre: number,
+    difficultes_details: string,
     tourisme_difficulte_trafic?: number,
     tourisme_difficulte_meteo?: number,
     tourisme_difficulte_denivele?: number,
