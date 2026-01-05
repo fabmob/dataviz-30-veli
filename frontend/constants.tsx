@@ -78,6 +78,7 @@ export const VELIS = [
     {name: "Cyclospace", licencePlate: "STC20"},
     {name: "Formidable", licencePlate: "GALFORMI01"},
     {name: "Frikar", licencePlate: "FRIKAR01"},
+    {name: "Galibot", licencePlate: "GALIBOT01"},
     {name: "Karbikes 1", licencePlate: "KARBIKES01"},
     {name: "Karbikes 2", licencePlate: "KARBIKES02"},
     {name: "Karbikes 3", licencePlate: "KARBIKES03"},
