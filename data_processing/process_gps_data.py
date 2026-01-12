@@ -92,7 +92,7 @@ def process_gps_data():
         {"plate": "MAIL0002", "startDate": "2025-05-13", "endDate": tomorrow, "Location": "Centre Hospitalier de Niort"}, # maj
         {"plate": "MAIL0003", "startDate": "2025-05-13", "endDate": tomorrow, "Location": "CA du Grand Avignon"}, # maj
         {"plate": "GY831PD", "startDate": "2025-07-17", "endDate": "2025-11-13", "Location": "CC Briançon"},
-        {"plate": "GY831PD", "startDate": "2025-11-17", "endDate": tomorrow, "Location": "CC Briançon"}, # date de début à revoir, après réparation
+        {"plate": "GY831PD", "startDate": "2025-11-19", "endDate": "2026-01-05", "Location": "CC Briançon"}, 
         {"plate": "VHELIOINSALAAS", "startDate": "2025-07-15", "endDate": tomorrow, "Location": "Toulouse"},
         {"plate": "URBANERINSALAAS", "startDate": "2025-07-15", "endDate": tomorrow, "Location": "Toulouse"},
         {"plate": "GALIBOT01", "startDate": "2025-09-14", "endDate": "2025-12-06", "Location": "CC 7 Vallées"},
@@ -107,7 +107,8 @@ def process_gps_data():
     def load_carmoove_exports():
         exports = []
         for file in os.listdir(CARMOOVE_EXPORTS_FOLDER):
-            exports.append(pd.read_csv(f"{CARMOOVE_EXPORTS_FOLDER}/{file}", sep=';'))
+            if file.endswith(".csv"):
+                exports.append(pd.read_csv(f"{CARMOOVE_EXPORTS_FOLDER}/{file}", sep=';'))
         return pd.concat(exports)
 
     df = load_carmoove_exports()
@@ -153,7 +154,8 @@ def process_gps_data():
 
     # Add all the files in the GPX_SOURCES_FOLDER dir
     for file in os.listdir(GPX_SOURCES_FOLDER):
-        df = pd.concat([df, add_gpx_to_df(GPX_SOURCES_FOLDER, file)])
+        if file.endswith(".gpx"):
+            df = pd.concat([df, add_gpx_to_df(GPX_SOURCES_FOLDER, file)])
 
     # Cleanup outliers
     df = df[df['Longitude (loc)'] != 0]
