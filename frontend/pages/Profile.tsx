@@ -4,6 +4,7 @@ import * as types from '../types'
 import PieChart from "../components/PieChart"
 import Carnet from "../components/Carnet"
 import { modelPicturesMap } from "../constants"
+import { fetchOverride } from "../api_cache"
 
 const Select = ({options, selected, onChange}) => {
     return (
@@ -29,7 +30,7 @@ const Profile = () => {
     
     React.useEffect(() => {
         const fetchData = async () => {
-            const experiences = await fetch(`/api/experiences?motif=${motifs.indexOf(profile.motif)}&distance=${distances.indexOf(profile.distance)}&permis=${permis.indexOf(profile.permis)}`)
+            const experiences = await fetchOverride(`/api/experiences?motif=${motifs.indexOf(profile.motif)}&distance=${distances.indexOf(profile.distance)}&permis=${permis.indexOf(profile.permis)}`)
             let experiencesJson: types.ExperiencesType = await experiences.json()
             Object.keys(experiencesJson).forEach(model => {
                 experiencesJson[model].carnetEntries.sort(() => 0.5 - Math.random())

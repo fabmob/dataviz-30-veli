@@ -5,6 +5,7 @@ import * as types from '../types'
 import { locations } from '../constants'
 
 import BarCharts from '../components/BarCharts'
+import { fetchOverride } from "../api_cache"
 
 const Stats = () => {
     const navigate = useNavigate()
@@ -13,9 +14,9 @@ const Stats = () => {
     const [statsLocation, setStatsLocation] = React.useState(useParams().location || "")
     React.useEffect(() => {
         const fetchData = async () => {
-            const stats = await fetch('/api/stats/' + statsLocation)
+            const stats = await fetchOverride('/api/stats/' + statsLocation)
             setStats(await stats.json())
-            const tripStats = await fetch('/api/tripStats/' + statsLocation).then(res => res.json())
+            const tripStats = await fetchOverride('/api/tripStats/' + statsLocation).then(res => res.json())
             setTripStats(tripStats)
         }
         fetchData()

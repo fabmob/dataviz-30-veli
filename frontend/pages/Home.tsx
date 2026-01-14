@@ -6,6 +6,7 @@ import HeatMap from "../components/HeatMap"
 import PieChart from "../components/PieChart"
 import Carnet from "../components/Carnet"
 import { modelPicturesMap, wikiLinks } from "../constants"
+import { fetchOverride } from "../api_cache"
 
 const Home = ({SettingsContext} : {SettingsContext: React.Context<types.SettingsContextType>}) => {
     const { settings, setSettings } = useContext(SettingsContext)
@@ -22,7 +23,7 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
     useEffect(() => {
         const fetchData = async () => {
             if (mapBounds && tab === "stats") {
-                const stats = await fetch(`/api/tripsInBbox?southWestLat=${mapBounds.sw.lat}&northEastLat=${mapBounds.ne.lat}&southWestLon=${mapBounds.sw.lng}&northEastLon=${mapBounds.ne.lng}&location=${location}&model=${model}`) 
+                const stats = await fetchOverride(`/api/tripsInBbox?southWestLat=${mapBounds.sw.lat}&northEastLat=${mapBounds.ne.lat}&southWestLon=${mapBounds.sw.lng}&northEastLon=${mapBounds.ne.lng}&location=${location}&model=${model}`) 
                 const statsJson : types.TripsInBboxType[] = await stats.json()
                 // console.log(statsJson)
                 setStats(statsJson)

@@ -3,6 +3,7 @@ import * as types from "../types"
 import { modelPicturesMap, wikiLinks } from "../constants"
 import MarkerMap from "./MarkerMap"
 import PanoramaxFrame from "./PanoramaxFrame"
+import { fetchOverride } from "../api_cache"
 
 const Carnet = ({carnetIndex, carnetEntry} : {carnetIndex?: string, carnetEntry?: types.CarnetType}) => {
     const [carnet, setCarnet] = useState<null | types.CarnetType>(null)
@@ -10,7 +11,7 @@ const Carnet = ({carnetIndex, carnetEntry} : {carnetIndex?: string, carnetEntry?
     const [clickedFeature, setClickedFeature] = useState(null)
     useEffect(() => {
         const fetchData = async () => {
-            const carnet = await fetch('/api/carnet/' + carnetIndex)
+            const carnet = await fetchOverride('/api/carnet/' + carnetIndex)
             let carnetJson : types.CarnetType = await carnet.json()
             console.log(carnetJson)
             setCarnet(carnetJson)

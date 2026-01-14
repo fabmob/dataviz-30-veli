@@ -5,6 +5,7 @@ import * as types from '../types'
 import { VELIS } from '../constants'
 
 import BarCharts from '../components/BarCharts'
+import { fetchOverride } from "../api_cache"
 
 const Vehicles = () => {
     const navigate = useNavigate()
@@ -18,7 +19,7 @@ const Vehicles = () => {
     const [maxDate, setMaxDate] = React.useState(new Date())
     React.useEffect(() => {
         const fetchData = async () => {
-            const stats = await fetch('/api/vehicleStats/' + licencePlate)
+            const stats = await fetchOverride('/api/vehicleStats/' + licencePlate)
             const statsJson = await stats.json()
             setStats(statsJson)
         }

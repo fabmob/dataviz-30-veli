@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useContext, useMemo } from "react"
 import { SettingsContextType } from "../types"
+import { fetchOverride } from "../api_cache"
 
 // @ts-ignore
 const L = window.L
@@ -107,7 +108,7 @@ const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext, hi
 
         const fetchData = async () => {
             try {
-                let data = await (await fetch(`/api/heatmapdata?location=${location}&model=${model}`)).json()
+                let data = await (await fetchOverride(`/api/heatmapdata?location=${location}&model=${model}`)).json()
                 cleanup()
                 objects.current.heatlayer = L.heatLayer(data.heatmapjson, {max: 10}).addTo(map.current)
                 for (let i = 0; i < data.carnetCoords.length; i++) {

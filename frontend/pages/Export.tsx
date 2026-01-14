@@ -64,7 +64,7 @@ const Export = () => {
                             Extrait anonymisé des expériences utilisateur
                         </h2>
                         <p>
-                            <a href="/api/experiences?permis=0&distance=0&motif=0&format=csv">Télécharger les données (format CSV)</a>, la génération peut prendre quelques instants.
+                            <a href="/cache/30veli_export_experiences.csv">Télécharger les données (format CSV)</a>, la génération peut prendre quelques instants.
                         </p>
                         <table>
                             <thead>
