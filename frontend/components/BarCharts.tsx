@@ -16,7 +16,7 @@ interface ChartData {
     }[]
 }
 
-const TripModelBarChart = ({ data, workFilter } : { data: types.ModelTripStatType, workFilter: boolean}) => {
+const TripModelBarChart = ({ data, workFilter } : { data: { [key: string]: types.ModelTripStatType }, workFilter: boolean}) => {
     const [chartData, setChartData] = useState<null | ChartData>(null)
     const chartOptions = {
         responsive: true,
@@ -59,17 +59,17 @@ const TripModelBarChart = ({ data, workFilter } : { data: types.ModelTripStatTyp
                 datasets: [
                     {
                         label: 'Nombre de trajets domicile-travail analysés',
-                        data: Object.values(data).map((d) => d.nbTripsTravail),
+                        data: Object.values(data).map((d) => d.nbTripsTravail || 0),
                         backgroundColor: 'rgb(233, 37, 79)',
                     },
                     {
                         label: 'Distance moyenne domicile-travail (km)',
-                        data: Object.values(data).map((d) => d.avgDistanceKmTravail),
+                        data: Object.values(data).map((d) => d.avgDistanceKmTravail || 0),
                         backgroundColor: 'rgb(30, 149, 228)',
                     },
                     {
                         label: 'Distance médiane domicile-travail (km)',
-                        data: Object.values(data).map((d) => d.medianDistanceKmTravail),
+                        data: Object.values(data).map((d) => d.medianDistanceKmTravail || 0),
                         backgroundColor: 'rgb(233, 176, 33)',
                     }
                 ]
