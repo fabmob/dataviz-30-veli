@@ -47,9 +47,8 @@ def get_all_vehicles_history_from_ts(token, start_ts):
 
 def fetch_and_save_recent_gps_data(start_date):
     start_ts = int(time.mktime(datetime.datetime.strptime(start_date, "%Y/%m/%d").timetuple()))
-    # token = get_token()
-    # vehicles_history = get_all_vehicles_history_from_ts(token, start_ts=start_ts)
-    vehicles_history = json.load(open("../../json_response_carmoove.json"))
+    token = get_token()
+    vehicles_history = get_all_vehicles_history_from_ts(token, start_ts=start_ts)
 
     df = pd.DataFrame.from_records(vehicles_history)
 
