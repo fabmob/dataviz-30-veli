@@ -3,10 +3,18 @@ import json
 from process_gps_data import process_gps_data
 from process_carnet import process_carnet
 from process_heatmaps import process_heatmaps
+from fetch_survey_grist_api import fetch_and_save_survey_data
+from fetch_gps_carmoove_api import fetch_and_save_recent_gps_data
 import pandas as pd
+from dotenv import load_dotenv
+import os
 
-OUTPUT_DATABASE_FILE = "../data.db" # Database for the 30veli dataviz
-OUTPUT_LIGHTWEIGHT_CSV_FILE = "../../trips_with_carnet_match_light.csv" # Only used to import data in superset
+load_dotenv()
+
+print("Fetching remote survey data, using grist API")
+fetch_and_save_survey_data()
+print("Fetching recent gps data, using carmoove API")
+fetch_and_save_recent_gps_data("2026/01/15")
 
 print("Processing gps data")
 raw_with_trip_ids, df_trips = process_gps_data()
@@ -17,7 +25,7 @@ process_heatmaps(raw_with_trip_ids)
 
 print("Saving results to database")
 # Save to database
-conn = sqlite3.connect(OUTPUT_DATABASE_FILE)
+conn = sqlite3.connect(os.getenv("DATAVIZ_DATABASE_FILE")) # Database for the 30veli dataviz
 
 raw_with_trip_ids.rename(columns={"Latitude (loc)": "Latitude(loc)", "Longitude (loc)": "Longitude(loc)"}, inplace=True)
 raw_with_trip_ids.to_sql('raw_with_trip_ids', conn, if_exists='replace')
@@ -39,53 +47,3 @@ print("Saving trips_with_carnet_match to database")
 trips_with_carnet_match.to_sql('trips_with_carnet_match', conn, if_exists='replace')
 
 conn.close()
-
-print("Generating csv for superset")
-# Save csv for superset
-# Only keep used columns
-trips_with_carnet_match = trips_with_carnet_match[[
-    "date",
-    "location",
-    "territoire",
-    "Model",
-    "Licence plate",
-    "TotalDistanceKm",
-    "UniqueTripID",
-    "vehicule",
-    "EndTime",
-    "StartTime",
-    "AvgSpeed",
-    "coords",
-    "point_noir_1",
-    "point_noir_1_lat",
-    "point_noir_1_lon",
-    "carnetEntryIndex",
-    "start_time",
-    "end_time",
-    "depart",
-    "arrivee",
-    "motif",
-    "point_noir_2",
-    "commentaires",
-    "bilan",
-    "avantage_agilite",
-    "avantage_aucun",
-    "avantage_bien_etre",
-    "avantage_confort",
-    "avantage_fierté",
-    "avantage_observation",
-    "avantage_reactions",
-    "avantage_autre",
-    "difficulte_amenagement",
-    "difficulte_aucune",
-    "difficulte_comportement",
-    "difficulte_stationnement",
-    "difficulte_vehicule",
-    "difficulte_visibilite",
-    "difficulte_autre"
-]]
-
-# set coords to null when their length is > 50000, since they'll be dropped anyway by superset
-trips_with_carnet_match.loc[trips_with_carnet_match['coords'].str.len()>50000, 'coords'] = None
-
-trips_with_carnet_match.to_csv(OUTPUT_LIGHTWEIGHT_CSV_FILE, index=False)

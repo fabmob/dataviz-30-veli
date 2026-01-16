@@ -133,7 +133,7 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
                                 </div>
                             </div>)}
                         </div>}
-                        {(tab == "carnets" && carnetIndex) && <Carnet carnetIndex={carnetIndex}/>}
+                        {(tab == "carnets" && carnetIndex !== undefined) && <Carnet carnetIndex={carnetIndex}/>}
                     </div>
                 </div>
             </section>

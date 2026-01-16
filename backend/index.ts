@@ -51,30 +51,23 @@ interface CarnetCoordType {
     isPointNoir: boolean
 }
 app.get('/api/heatmapdata', (req, res) => {
-    const location = (req.query.location === "undefined" || req.query.location === "Tous") ? null : req.query.location
     const model = (req.query.model === "undefined" || req.query.model === "Tous") ? null : req.query.model
-    let query = `select carnetEntryIndex, coords, point_noir_1_lat, point_noir_1_lon, bilan, vehicule from trips_with_carnet_match where carnetEntryIndex not null and vehicule != 'Golf6'`
-    if (location) {
-        query += ` and location = '${location}'`
-    }
+    let query = `select carnetEntryIndex, coords, bilan, vehicule from trips_with_carnet_match where carnetEntryIndex not null and vehicule != 'Golf6'`
     if (model) {
         query += ` and Model = '${model}'`
     }
     query += ` group by carnetEntryIndex`
-    const carnetRows = db.prepare(query).all() as { carnetEntryIndex: string, point_noir_1_lat: number, point_noir_1_lon: number, bilan: string, vehicule: string, coords: string }[]
+    const carnetRows = db.prepare(query).all() as { carnetEntryIndex: string, bilan: string, vehicule: string, coords: string }[]
     let carnetCoords : CarnetCoordType[] = []
     for (let i = 0; i < carnetRows.length; i++) {
         const carnetRow = carnetRows[i]
-        if (carnetRow.point_noir_1_lat) {
-            carnetCoords.push({lat: carnetRow.point_noir_1_lat, lon: carnetRow.point_noir_1_lon, carnetEntryIndex: carnetRow.carnetEntryIndex, bilan: carnetRow.bilan, vehicule: carnetRow.vehicule, isPointNoir: true})
-        } else if (carnetRow.coords) {
+        if (carnetRow.coords) {
             const coords = JSON.parse(carnetRow.coords.replace(/\(/g, "[").replace(/\)/g, "]"))
             const midCoord = coords[Math.floor(coords.length / 2)]
             carnetCoords.push({lat: midCoord[0], lon: midCoord[1], carnetEntryIndex: carnetRow.carnetEntryIndex, bilan: carnetRow.bilan, vehicule: carnetRow.vehicule, isPointNoir: false})
         }
     }
-    let jsonFile = "heatmaps/" + (location ? location : 'all')
-    jsonFile += '/' + (model ? model : 'all') + '.json'
+    let jsonFile = 'heatmaps/all/' + (model ? model : 'all') + '.json'
     let heatmapjson
     try {
         heatmapjson = JSON.parse(fs.readFileSync(jsonFile).toString())
@@ -111,7 +104,6 @@ interface Carnet {
     avantage_reactions: number,
     avantage_bien_etre: number,
     avantage_autre: number,
-    tourisme_avantages_detail?: number, 
     difficulte_aucune: number,
     difficulte_visibilite: number,
     difficulte_amenagement: number,
@@ -120,33 +112,15 @@ interface Carnet {
     difficulte_comportement: number,
     difficulte_autre: number,
     difficultes_details: string,
-    tourisme_difficulte_trafic?: number,
-    tourisme_difficulte_meteo?: number,
-    tourisme_difficulte_denivele?: number,
-    tourisme_difficulte_distance?: number,
-    tourisme_difficulte_autonomie?: number,
-    tourisme_difficulte_diff_vitesse?: number,
-    tourisme_difficulte_positionnement?: number,
-    tourisme_difficulte_intersection?: number,
-    tourisme_difficulte_depart_cote?: number,
-    tourisme_difficulte_fatigue?: number,
-    tourisme_difficulte_depassement?: number,
-    tourisme_difficulte_autre?: number,
-    tourisme_difficulte_detail?: string,
     point_noir_1: number,
     point_noir_2: number,
     bilan: string,
     commentaires: string,
-    point_noir_1_lon: number,
-    point_noir_1_lat: number,
     geojson?: { type: string, features: { type: string, geometry: { type: string, coordinates: number[][][] }, properties: { h3Index: string } }[] }
     edits?: { [key: string]: string },
-    mode_domicile_travail?: string,
-    mode_domicile_etudes?: string,
-    mode_domicile_loisirs?: string
 }
 app.get('/api/carnet/:carnetIndex', (req, res) => {
-    const carnet = db.prepare("select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, group_concat(distinct UniqueTripID) as uniqueTripIDs, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, difficultes_details, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat, tourisme_avantages_detail, tourisme_difficulte_trafic, tourisme_difficulte_meteo, tourisme_difficulte_denivele, tourisme_difficulte_distance, tourisme_difficulte_autonomie, tourisme_difficulte_diff_vitesse, tourisme_difficulte_positionnement, tourisme_difficulte_intersection, tourisme_difficulte_depart_cote, tourisme_difficulte_fatigue, tourisme_difficulte_depassement, tourisme_difficulte_autre, tourisme_difficulte_detail from trips_with_carnet_match where carnetEntryIndex = ? group by carnetEntryIndex")
+    const carnet = db.prepare("select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, group_concat(distinct UniqueTripID) as uniqueTripIDs, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, difficultes_details, point_noir_1, point_noir_2, bilan, commentaires from trips_with_carnet_match where carnetEntryIndex = ? group by carnetEntryIndex")
         .get(req.params.carnetIndex) as Carnet
     if (carnet.uniqueTripIDs) {
         const uniqueTripIDs = carnet.uniqueTripIDs.split(',')
@@ -183,11 +157,9 @@ interface TripInBboxQueryType {
     northEastLat: string,
     southWestLon: string,
     northEastLon: string,
-    location?: string,
     model?: string
 }
 app.get('/api/tripsInBbox', (req, res) => {
-    const location = (req.query.location === "undefined" || req.query.location === "Tous") ? null : req.query.location
     const model = (req.query.model === "undefined" || req.query.model === "Tous") ? null : req.query.model
     const southWestLat = parseFloat(req.query.southWestLat as string || "0")
     const northEastLat = parseFloat(req.query.northEastLat as string || "0")
@@ -195,7 +167,6 @@ app.get('/api/tripsInBbox', (req, res) => {
     const northEastLon = parseFloat(req.query.northEastLon as string || "0")
     const rows = db.prepare("select Model, group_concat(distinct carnetEntryIndex) as carnetEntryIndexes, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips from trips_with_carnet_match where UniqueTripID in " +
         `(select DISTINCT UniqueTripID from raw_with_trip_ids where "Latitude(loc)" BETWEEN ? and ? and "Longitude(loc)" BETWEEN ? and ?) ` +
-        (location ? ` and location = '${location}' ` : "") +
         (model ? ` and Model = '${model}' ` : "") +
         "group by Model"
     ).all(southWestLat, northEastLat, southWestLon, northEastLon) as TripsInBboxType[]
@@ -255,23 +226,9 @@ interface Stats {
     firstTrip: string,
     lastTrip: string
 }
-const stats_cache : { [key: string]: Stats } = {}
-const fetchStats = (location?: string) => {
-    if (location) {
-        if (stats_cache[location]) {
-            return stats_cache[location]
-        }
-    } else {
-        if (stats_cache["Tous"]) {
-            return stats_cache["Tous"]
-        }
-    }
-    let rows
-    if (location) {
-        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and location = ? and totalDistanceKm > 0.1 group by Model").all(location) as StatsRow[]
-    } else {
-        rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and totalDistanceKm > 0.1 group by Model").all() as StatsRow[]
-    }
+const fetchStats = () => {
+    const rows = db.prepare("select Model, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, min(StartTime) as firstTrip, max(StartTime) as lastTrip from trips_with_carnet_match where Model is not NULL and totalDistanceKm > 0.1 group by Model").all() as StatsRow[]
+
     let res : Stats = {
         models: {},
         actifs: {
@@ -306,19 +263,13 @@ const fetchStats = (location?: string) => {
             res.lastTrip = row.lastTrip
         }
     }
-    if (!location) {
-        location = "Tous"
-    }
-    stats_cache[location] = res
     return res
 }
 
 app.get('/api/stats/', (req, res) => {
     res.json(fetchStats())
 })
-app.get('/api/stats/:location', (req, res) => {
-    res.json(fetchStats(req.params.location))
-})
+
 
 interface TripsStatsType {
     models: { [key: string]: { 
@@ -338,25 +289,11 @@ interface TripsStatsRow {
     avgDistanceKm: number,
     nbTrips: number,
 }
-const tripStatsCache : { [key: string]: TripsStatsType } = {}
-const fetchTripStats = (location?: string) => {
-    if (location) {
-        if (tripStatsCache[location]) {
-            return tripStatsCache[location]
-        }
-    } else {
-        if (tripStatsCache["Tous"]) {
-            return tripStatsCache["Tous"]
-        }
-    }
-    let locationParam = "location != 'En transit'"
-    if (location) {
-        locationParam = `location = '${location}'`
-    }
+const fetchTripStats = () => {
     const rows = db.prepare(`
         select Model, avg(TotalDistanceKm) as avgDistanceKm, count() as nbTrips
         from trips_with_carnet_match 
-        where Model is not NULL and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam}
+        where Model is not NULL and TotalDistanceKm > 0.1 and TotalDistanceKm < 100
         group by Model
     `).all() as TripsStatsRow[]
     let stats : TripsStatsType = {
@@ -373,7 +310,7 @@ const fetchTripStats = (location?: string) => {
     const rows_travail = db.prepare(`
         select Model, avg(TotalDistanceKm) as avgDistanceKm, count() as nbTrips
         from trips_with_carnet_match 
-        where Model is not NULL and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam} and motif like '%ravail%'
+        where Model is not NULL and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and motif like '%ravail%'
         group by Model
     `).all() as TripsStatsRow[]
     rows_travail.forEach((row) => {
@@ -383,7 +320,7 @@ const fetchTripStats = (location?: string) => {
     const stmt = db.prepare(`
         select TotalDistanceKm as medianDistanceKm
         from trips_with_carnet_match
-        where Model = ? and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam}
+        where Model = ? and TotalDistanceKm > 0.1 and TotalDistanceKm < 100
         order by TotalDistanceKm
         LIMIT 1
         offset ?
@@ -391,7 +328,7 @@ const fetchTripStats = (location?: string) => {
     const stmt_travail = db.prepare(`
         select TotalDistanceKm as medianDistanceKm
         from trips_with_carnet_match
-        where Model = ? and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam} and motif like '%ravail%'
+        where Model = ? and TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and motif like '%ravail%'
         order by TotalDistanceKm
         LIMIT 1
         offset ?
@@ -411,30 +348,18 @@ const fetchTripStats = (location?: string) => {
     const trips_per_distance = db.prepare(`
         select round(TotalDistanceKm / 5)*5 as range_id, count() as nbTrips
         from trips_with_carnet_match
-        where TotalDistanceKm > 0.1 and TotalDistanceKm < 100 and ${locationParam}
+        where TotalDistanceKm > 0.1 and TotalDistanceKm < 100
         group by range_id
     `).all() as { range_id: number, nbTrips: number }[]
     trips_per_distance.forEach((row) => {
         stats.trips_per_distance[row.range_id] = row.nbTrips
     })
-    if (!location) {
-        location = "Tous"
-    }
-    tripStatsCache[location] = stats
     return stats
 }
 
 app.get('/api/tripStats/', (req, res) => {
     res.json(fetchTripStats())
 })
-
-app.get('/api/tripStats/:location', (req, res) => {
-    res.json(fetchTripStats(req.params.location))
-})
-
-// const motifs = ["pour toutes raisons", "pour me rendre au travail", "pour mon travail", "pour mes loisirs", "pour faire mes courses", "pour mes enfants/famille", "pour aller chez le médecin"]
-//     const distances = ["toutes distances", "moins de 2 km", "entre 2 et 5 km", "entre 5 et 10 km", "entre 10 et 20 km", "plus de 20 km"]
-//     const permis = ["j'ai mon permis", "je n'ai pas mon permis"]
 
 const motifsMatch = [
     "1=1",
@@ -446,6 +371,9 @@ const motifsMatch = [
     "motif in ('Médecin', 'Médical', 'rdv médical')"
 ]
 
+// TotalDistanceKm filters on single trip distances
+// totalDistanceKm filters on total distances if multiple trips match an experience
+// Not sure which one is better
 const distancesMatch = [
     "1=1",
     "cast(TotalDistanceKm as float) between 0 and 2",
@@ -472,7 +400,7 @@ app.get('/api/experiences', (req, res) => {
     const distance = req.query.distance ? parseInt(req.query.distance as string) : 0
     const motif = req.query.motif ? parseInt(req.query.motif as string) : 0
     const stmt = db.prepare(`
-        select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, difficultes_details, point_noir_1, point_noir_2, bilan, commentaires, point_noir_1_lon, point_noir_1_lat, mode_domicile_travail, mode_domicile_etudes, mode_domicile_loisirs
+        select Model, vehicule, sum(TotalDistanceKm) as totalDistanceKm, count() as nbTrips, territoire, heure_debut,heure_fin, carnetEntryIndex, moment, meteo_ensoleille, meteo_nuageux, meteo_pluvieux, meteo_venteux, meteo_neigeux, meteo_brouillard, meteo_autre, motif, avantage_aucun, avantage_agilite, avantage_confort, avantage_observation, avantage_fierté, avantage_reactions, avantage_bien_etre, avantage_autre, difficulte_aucune, difficulte_visibilite, difficulte_amenagement, difficulte_stationnement, difficulte_vehicule, difficulte_comportement, difficulte_autre, difficultes_details, point_noir_1, point_noir_2, bilan, commentaires
         from trips_with_carnet_match 
         where carnetEntryIndex >= 0 and ${permisMatch[permis]} and ${distancesMatch[distance]} and ${motifsMatch[motif]}
         group by carnetEntryIndex
@@ -530,12 +458,12 @@ const getMostFrequentBilan = (bilans: string[]) => {
 
 app.get('/api/vehicleStats/:licence_plate', (req, res) => {
     const stmt = db.prepare(`
-        select date(StartTime) as day, "Licence plate", Model, location, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, group_concat(AvgSpeed) as average_speed_concat, group_concat(bilan) as bilan_concat
+        select date(StartTime) as day, "Licence plate", Model, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, group_concat(AvgSpeed) as average_speed_concat, group_concat(bilan) as bilan_concat
         from trips_with_carnet_match 
-        where StartTime not null and location != 'En transit' and "Licence plate" = '${req.params.licence_plate}'
+        where StartTime not null and "Licence plate" = '${req.params.licence_plate}'
         group by day
     `)
-    let rows = stmt.all() as { day: string, "Licence plate": string, Model: string, location: string, nb_trips: number, total_distance_km: number, average_speed_concat?: string, bilan_concat?: string, average_speed_kmh: number, most_frequent_bilan: string }[]
+    let rows = stmt.all() as { day: string, "Licence plate": string, Model: string, nb_trips: number, total_distance_km: number, average_speed_concat?: string, bilan_concat?: string, average_speed_kmh: number, most_frequent_bilan: string }[]
     rows = rows.map(row => {
         const credibleSpeeds = row?.average_speed_concat?.split(',').map(s => parseFloat(s)).filter(s => s > 5) || []
         row.average_speed_kmh = credibleSpeeds.reduce((acc, cur) => acc + cur, 0) / credibleSpeeds.length

@@ -2,10 +2,11 @@ import pandas as pd
 import numpy as np
 import h3pandas
 from pathlib import Path
+import os
 
-OUTPUT_FOLDER = '../heatmaps'
 
 def generate_heatmap_per_model(df, location, model):
+    OUTPUT_FOLDER = os.getenv("HEATMAPS_OUTPUT_FOLDER")
     if model == "all":
         df_model = df
     else:
@@ -46,16 +47,16 @@ Returns:
     location is the name of the territory, and can be "all"
     model is the name of the vehicle model, and can be "all"
 '''
-def process_heatmaps(_raw_with_trip_ids):
-    raw_with_trip_ids = _raw_with_trip_ids[_raw_with_trip_ids['location'] != 'En transit']
+def process_heatmaps(raw_with_trip_ids):
+    # raw_with_trip_ids = _raw_with_trip_ids[_raw_with_trip_ids['location'] != 'En transit']
     generate_heatmap_per_model(raw_with_trip_ids, "all", "all")
     
     for model in raw_with_trip_ids['Model'].unique():
         generate_heatmap_per_model(raw_with_trip_ids, "all", model)
     
-    for loc in raw_with_trip_ids['location'].unique():
-        df_loc = raw_with_trip_ids[raw_with_trip_ids['location'] == loc]  # Filter for the specific location
-        generate_heatmap_per_model(df_loc, loc, "all")
+    # for loc in raw_with_trip_ids['location'].unique():
+    #     df_loc = raw_with_trip_ids[raw_with_trip_ids['location'] == loc]  # Filter for the specific location
+    #     generate_heatmap_per_model(df_loc, loc, "all")
 
-        for model in df_loc['Model'].unique():
-            generate_heatmap_per_model(df_loc, loc, model)
+    #     for model in df_loc['Model'].unique():
+    #         generate_heatmap_per_model(df_loc, loc, model)
