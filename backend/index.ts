@@ -469,6 +469,16 @@ app.get('/api/vehicleStats/:licence_plate', (req, res) => {
     res.json(rows)
 })
 
+app.get('/api/vehicles', (req, res) => {
+    const stmt = db.prepare(`
+        select distinct LicencePlate, Model from trips_with_carnet_match
+        where Model is not NULL and LicencePlate is not NULL
+        order by Model, LicencePlate
+    `)
+    let rows = stmt.all() as { Model: string, LicencePlate: string }[]
+    res.json(rows)
+})
+
 app.all("/api/:any", function(_, res) {
     res.status(404).json({
         status: "Not found"

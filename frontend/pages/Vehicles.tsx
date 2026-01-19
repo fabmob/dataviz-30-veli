@@ -2,7 +2,6 @@ import React from "react"
 import { useParams, useNavigate } from "react-router"
 
 import * as types from '../types'
-import { VELIS } from '../constants'
 
 import BarCharts from '../components/BarCharts'
 
@@ -16,6 +15,15 @@ const Vehicles = () => {
     const [minDate, setMinDate] = React.useState(new Date("2023-01-01"))
     const [shiftedMinDate, setShiftedMinDate] = React.useState(new Date("2023-01-01"))
     const [maxDate, setMaxDate] = React.useState(new Date())
+    const [velis, setVelis] = React.useState<{Model: string, LicencePlate: string}[]>([])
+    React.useEffect(() => {
+        const fetchData = async () => {            
+            const velis = await fetch('/api/vehicles')
+            const velisJson = await velis.json()
+            setVelis(velisJson)
+        }
+        fetchData()
+    }, [])
     React.useEffect(() => {
         const fetchData = async () => {
             const stats = await fetch('/api/vehicleStats/' + licencePlate)
@@ -76,7 +84,7 @@ const Vehicles = () => {
                             Statistiques pour le VELI
                             <div className="select ml-2 mr-2">
                                 <select value={licencePlate} onChange={(e) => setLicencePlate(e.target.value)}>
-                                    {VELIS.map((veli, index) => <option key={index} value={veli.licencePlate}>{veli.name}</option>)}
+                                    {velis.map((veli, index) => <option key={index} value={veli.LicencePlate}>{veli.Model + " (" + veli.LicencePlate + ")"}</option>)}
                                 </select>
                             </div>
                             au cours des
