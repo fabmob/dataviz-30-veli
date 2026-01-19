@@ -8,11 +8,10 @@ interface HeatMapParamsTypes {
     onMapMove: (any) => void,
     onMarkerClick: (any) => void,
     onLocationClick: (any) => void,
-    SettingsContext: React.Context<SettingsContextType>,
-    hideGeoJsonTerritoires?: boolean
+    SettingsContext: React.Context<SettingsContextType>
 }
 
-const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext, hideGeoJsonTerritoires}: HeatMapParamsTypes) => {
+const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext}: HeatMapParamsTypes) => {
     const { settings } = useContext(SettingsContext)
     const location = settings.location
     const model = settings.model
@@ -31,31 +30,6 @@ const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext, hi
         "Non déclaré": true
     })
 
-    const addGeoJsonTerritoires = () => {
-        fetch("/geojsons/territoires.geojson").then(response => response.json()).then(data => {
-            map.current.createPane("geojsonPane")
-            map.current.getPane("geojsonPane").style.zIndex = 500
-            L.geoJSON(
-                data,
-                {                
-                    onEachFeature: (feature, layer) => {
-                        if (feature.properties && feature.properties.name) {
-                            layer.bindTooltip(feature.properties.name, { sticky: true })
-                        }
-                        layer.on('click', function(e) {
-                            onLocationClick(feature.properties.loc_name)
-                        })
-                    },
-                    pane: "geojsonPane",
-                    style: {
-                        "color": "#957777",
-                        "weight": 2,
-                        "fillOpacity": 0.3
-                    }
-                }
-            ).addTo(map.current)
-        })
-    }
     useEffect(() => {
         if (!map.current) {
             const sombre = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
@@ -82,10 +56,6 @@ const HeatMap = ({onMapMove, onMarkerClick, onLocationClick, SettingsContext, hi
                 map.current.on('moveend', function() { 
                     onMapMove(map.current.getBounds())
                 })
-                
-                if (!hideGeoJsonTerritoires) {
-                    addGeoJsonTerritoires()
-                }
             } catch (error) {
                 console.error(error)
             }

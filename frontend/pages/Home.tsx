@@ -5,7 +5,7 @@ import * as types from '../types'
 import HeatMap from "../components/HeatMap"
 import PieChart from "../components/PieChart"
 import Carnet from "../components/Carnet"
-import { modelPicturesMap, wikiLinks } from "../constants"
+import { modelPicturesMap } from "../constants"
 
 const Home = ({SettingsContext} : {SettingsContext: React.Context<types.SettingsContextType>}) => {
     const { settings, setSettings } = useContext(SettingsContext)
@@ -71,7 +71,7 @@ const Home = ({SettingsContext} : {SettingsContext: React.Context<types.Settings
                                 <h2 className="subtitle">
                                     Vue d'ensemble 
                                     {(settings.location && settings.location !== "Tous") ? 
-                                        <span> (<a href={wikiLinks[settings.location]} title="En savoir plus sur l'expérimentation du territoire">{settings.location}</a>)</span>
+                                        <span> {settings.location}</span>
                                         : ""}
                                     {(settings.model && settings.model !== "Tous") ? ` (${settings.model})` : ""}
                                 </h2>

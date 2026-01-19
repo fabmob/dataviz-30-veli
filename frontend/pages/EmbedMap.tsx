@@ -3,9 +3,7 @@ import { useParams, useNavigate } from "react-router"
 
 import * as types from '../types'
 import HeatMap from "../components/HeatMap"
-import PieChart from "../components/PieChart"
-import Carnet from "../components/Carnet"
-import { modelPicturesMap, wikiLinks } from "../constants"
+import { modelPicturesMap } from "../constants"
 
 const EmbedMap = ({SettingsContext} : {SettingsContext: React.Context<types.SettingsContextType>}) => {
     const { settings, setSettings } = useContext(SettingsContext)
@@ -59,14 +57,14 @@ const EmbedMap = ({SettingsContext} : {SettingsContext: React.Context<types.Sett
                                 <h2 className="subtitle">
                                     Carte des expériences en véli
                                     {(settings.location && settings.location !== "Tous") ? 
-                                        <span> (<a href={wikiLinks[settings.location]} title="En savoir plus sur l'expérimentation du territoire">{settings.location}</a>)</span>
+                                        <span>{settings.location}</span>
                                         : ""}
                                     {(settings.model && settings.model !== "Tous") ? ` (${settings.model})` : ""}
                                 </h2>
                             </div>
                         </div>
                         <div style={{"clear": "both"}}>
-                            {ready && <HeatMap onMapMove={onMapMove} onMarkerClick={onMarkerClick} onLocationClick={onLocationClick} SettingsContext={SettingsContext} hideGeoJsonTerritoires={true}/>}
+                            {ready && <HeatMap onMapMove={onMapMove} onMarkerClick={onMarkerClick} onLocationClick={onLocationClick} SettingsContext={SettingsContext}/>}
                             <div>Filtre véli: {vehicles.map(v => 
                                 <span style={!veliFilter[v] ? veliUnselectedStyle : veliSelectedStyle} onClick={() => editVeliFilter(v)}>{v}, </span>
                             )} </div>
