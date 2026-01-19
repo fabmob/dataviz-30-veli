@@ -45,9 +45,11 @@ def get_all_vehicles_history_from_ts(token, start_ts):
         offset += 1000
     return vehicles_history
 
-def fetch_and_save_recent_gps_data(start_date):
-    start_ts = int(time.mktime(datetime.datetime.strptime(start_date, "%Y/%m/%d").timetuple()))
+def fetch_and_save_recent_gps_data():
     token = get_token()
+    nb_days = os.get_env("CARMOOVE_NUMBER_DAYS_TO_FETCH", "3")
+    start_date = datetime.datetime.now() - datetime.timedelta(days=int(nb_days))
+    start_ts = int(start_date.timestamp())
     vehicles_history = get_all_vehicles_history_from_ts(token, start_ts=start_ts)
 
     df = pd.DataFrame.from_records(vehicles_history)

@@ -14,7 +14,7 @@ load_dotenv()
 print("Fetching remote survey data, using grist API")
 fetch_and_save_survey_data()
 print("Fetching recent gps data, using carmoove API")
-fetch_and_save_recent_gps_data("2026/01/15")
+fetch_and_save_recent_gps_data()
 
 print("Processing gps data")
 raw_with_trip_ids, df_trips = process_gps_data()
