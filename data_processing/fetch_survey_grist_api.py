@@ -54,7 +54,7 @@ def fetch_and_save_survey_data():
     df = create_columns_from_multiple_choice(df, "avantages", mapping_avantages)
     df = create_columns_from_multiple_choice(df, "difficultes", mapping_difficultes)
 
+    df['date'] = df['date'].fillna(0).astype(int)
     df['date'] = pd.to_datetime(df['date'], unit='s')
-    df['date_questionnaire'] = pd.to_datetime(df['date_questionnaire'], unit='s')
 
     df.to_csv(os.getenv("SURVEY_OUTPUT_CSV_FILE"), sep=";")

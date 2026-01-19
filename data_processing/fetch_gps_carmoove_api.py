@@ -47,7 +47,7 @@ def get_all_vehicles_history_from_ts(token, start_ts):
 
 def fetch_and_save_recent_gps_data():
     token = get_token()
-    nb_days = os.get_env("CARMOOVE_NUMBER_DAYS_TO_FETCH", "3")
+    nb_days = os.getenv("CARMOOVE_NUMBER_DAYS_TO_FETCH", "3")
     start_date = datetime.datetime.now() - datetime.timedelta(days=int(nb_days))
     start_ts = int(start_date.timestamp())
     vehicles_history = get_all_vehicles_history_from_ts(token, start_ts=start_ts)
@@ -63,10 +63,12 @@ def fetch_and_save_recent_gps_data():
 
     df = pd.concat([df_ts, df_veh, df_location, df_status, df_electric], axis=1)
     
+    # Ensures compatibility with manual exports
     df.rename(columns={
         'longitude': 'Longitude (loc)',
         'latitude': 'Latitude (loc)',
         'altitude': 'Altitude (loc)',
+        'angle': 'Angle (loc)',
         'model': 'Model',
         'brand': 'Brand',
         'plate': 'Licence plate',
@@ -74,7 +76,7 @@ def fetch_and_save_recent_gps_data():
         'id': 'vehicle ID'
     }, inplace=True)
 
-    start_date_str = start_date.replace("/", "")
+    start_date_str = start_date.strftime("%Y%m%d")
     now_date_str = datetime.datetime.now().strftime("%Y%m%d")
 
     df.to_csv(f"{os.getenv('CARMOOVE_EXPORTS_FOLDER')}/{start_date_str}-{now_date_str}.csv", sep=";")

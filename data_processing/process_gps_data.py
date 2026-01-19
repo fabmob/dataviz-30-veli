@@ -5,37 +5,35 @@ import gpxpy
 import os
 
 '''
-Processes raw GPS data from Carmoove exports and GPX files and converts them to trips with their associated location.
+Processes raw GPS data from Carmoove exports and GPX files and converts them to trips.
 
 A new trip is considered when the vehicle hasn't moved for more than 600 seconds. The method also recomputes distances travelled,
 and uses this information as part of the rules to discard outliers and data errors.
 
 Sources:
-    CARMOOVE_EXPORTS_FOLDER files: csv files containing GPS data, exported from Carmoove website. All files in the folder will be processed.
+    CARMOOVE_EXPORTS_FOLDER (.env) files: csv files containing GPS data, exported from Carmoove website or via API. 
+    All files in the folder will be processed.
         The following columns are expected: 
-        'Date & time', 'Licence plate', 'VIN', 'vehicle ID', 'Brand', 'Model',
-        'Category', 'Driver', 'Trip ID', 'Trip Status', 'Latitude (loc)',
-        'Longitude (loc)', 'Angle (loc)', 'Altitude (loc)',
+        'timestamp', 'Licence plate', 'VIN', 'vehicle ID', 'Brand', 'Model',
+        'Latitude (loc)', 'Longitude (loc)', 'Angle (loc)', 'Altitude (loc)'
+
+        Optionally, the following columns can appear, but are not used:
+        'Date & time', 'Category', 'Driver', 'Trip ID', 'Trip Status',
         'Mileage (km total)', 'Energy level (%)', 'Energy level (L)',
         'Energy level (Kwa)', 'Consumption (L)', 'Consumption (Kwa)',
         'Autonomy (km)', 'Speed (km/h)', 'Accel X (mG)', 'Accel Y (mG)',
         'Accel Z (mG)', 'External temperature (°C)', 'Battery Temperature (°C)',
         'SOH (%)', 'SOC (%)', 'SOS (%)', 'EV Battery (V)', 'Battery (V)',
         'Alert (code)', 'CO2 (g)', 'T° Sensor 1'
-    GPX_SOURCES_FOLDER files: Regular GPX files. Files should be named as follows: DATE_VehicleName_XXX.gpx, eg: 20251205_Galibot_1.gpx
-        VehiculeName will be used to match the GPX data to a virtual licence plate and a location. The plate is hard-coded for now.
-    distrib_territoires: Hard-coded source of truth for the location of each vehicules. This list needs to be updated when new vehicules are added or moved.
 
 Returns:
     (raw_with_trip_ids, cleaned) tuple: 
         raw_with_trip_ids : dataframe containing raw data, with one row per GPS point. It is later used to generate heatmaps and geographicaly filter trips.
             It contains the following columns:
-            'Latitude (loc)', 'Longitude (loc)', 'UniqueTripID', 'Distance', 'location', 'Model'
+            'Latitude(loc)', 'Longitude(loc)', 'UniqueTripID', 'Distance', 'Licence plate', 'Model'
         df_trips :dataframe containing aggregated data, with one row per trip. It contains the following columns:
-            'UniqueTripID', 'coords', 'timestamps', 'TotalDistanceKm', 'AvgSpeed',
-            'StartTime', 'EndTime', 'Licence plate', 'VIN', 'vehicle ID', 'Brand',
-            'Model', 'Category', 'External temperature (°C)', 'T° Sensor 1',
-            'Prev datetime', 'DurationSinceLast', 'location'
+            'UniqueTripID', 'coords', 'TotalDistanceKm', 'StartTime', 'EndTime',
+            'LicencePlate', 'Brand', 'Model', 'DurationHour', 'AvgSpeed'
 '''
 def process_gps_data():
     def load_carmoove_exports():
@@ -115,30 +113,26 @@ def process_gps_data():
 
     # Group stats by trips
     df['latlng'] = list(zip(df['Latitude (loc)'], df['Longitude (loc)']))
-    firsts = df.groupby('UniqueTripID').first()
     df_trips = df.groupby('UniqueTripID').agg(
-        coords=('latlng', lambda x: x.tolist()), 
-        timestamps=('datetime', lambda x: x.tolist()), 
+        coords=('latlng', lambda x: x.tolist()),
         TotalDistanceKm=('Distance', "sum"),
         StartTime=('datetime', 'first'),
-        EndTime=('datetime', 'last')
-    ).merge(firsts, on='UniqueTripID')
+        EndTime=('datetime', 'last'),
+        LicencePlate=('Licence plate', 'first'),
+        Brand=('Brand', 'first'),
+        Model=('Model', 'first'),
+    )
 
     df_trips['DurationHour'] = (df_trips['EndTime'] - df_trips['StartTime']).dt.total_seconds() / (60 * 60)
     df_trips['AvgSpeed'] = df_trips['TotalDistanceKm'] / df_trips['DurationHour']
 
     # Drop useless columns
-    df_trips.drop(columns=[
-        # 'Date & time', 'Driver', 'Trip ID', 'Trip Status', 'Latitude (loc)', 'Longitude (loc)',
-        # 'Angle (loc)', 'Altitude (loc)', 'Mileage (km total)',
-        # 'Energy level (%)', 'Energy level (L)', 'Energy level (Kwa)',
-        # 'Consumption (L)', 'Consumption (Kwa)', 'Autonomy (km)', 'Speed (km/h)',
-        # 'Accel X (mG)', 'Accel Y (mG)', 'Accel Z (mG)', 'Battery Temperature (°C)', 'SOH (%)',
-        # 'SOC (%)', 'SOS (%)', 'EV Battery (V)', 'Battery (V)', 'Alert (code)',
-        # 'CO2 (g)', 
-        'Prev Latitude', 'Prev Longitude', 'Distance',
-        'latlng', 'datetime'], inplace=True)
     df_trips.reset_index(inplace=True)
+    df_trips = df_trips[[
+        'UniqueTripID', 'coords', 'TotalDistanceKm', 'StartTime', 'EndTime',
+        'LicencePlate', 'Brand', 'Model',
+        'DurationHour', 'AvgSpeed'
+    ]]
 
     # Filter out trips with a distance of less than 100m
     df_trips = df_trips[df_trips.TotalDistanceKm > 0.01]

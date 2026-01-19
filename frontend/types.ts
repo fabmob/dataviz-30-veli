@@ -124,7 +124,7 @@ interface SettingsContextType {
 
 interface VehicleHistoryType {
     day: string,
-    "Licence plate": string,
+    LicencePlate: string,
     Model: string,
     location: string,
     nb_trips: number,

@@ -152,13 +152,6 @@ interface TripsInBboxType {
     nbTrips: number,
     carnetEntries?: { carnetEntryIndex: string, bilan: string, commentaires: string }[]
 }
-interface TripInBboxQueryType {
-    southWestLat: string,
-    northEastLat: string,
-    southWestLon: string,
-    northEastLon: string,
-    model?: string
-}
 app.get('/api/tripsInBbox', (req, res) => {
     const model = (req.query.model === "undefined" || req.query.model === "Tous") ? null : req.query.model
     const southWestLat = parseFloat(req.query.southWestLat as string || "0")
@@ -458,12 +451,12 @@ const getMostFrequentBilan = (bilans: string[]) => {
 
 app.get('/api/vehicleStats/:licence_plate', (req, res) => {
     const stmt = db.prepare(`
-        select date(StartTime) as day, "Licence plate", Model, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, group_concat(AvgSpeed) as average_speed_concat, group_concat(bilan) as bilan_concat
+        select date(StartTime) as day, LicencePlate, Model, count(distinct UniqueTripID) as nb_trips, sum(TotalDistanceKm) as total_distance_km, group_concat(AvgSpeed) as average_speed_concat, group_concat(bilan) as bilan_concat
         from trips_with_carnet_match 
-        where StartTime not null and "Licence plate" = '${req.params.licence_plate}'
+        where StartTime not null and LicencePlate = '${req.params.licence_plate}'
         group by day
     `)
-    let rows = stmt.all() as { day: string, "Licence plate": string, Model: string, nb_trips: number, total_distance_km: number, average_speed_concat?: string, bilan_concat?: string, average_speed_kmh: number, most_frequent_bilan: string }[]
+    let rows = stmt.all() as { day: string, LicencePlate: string, Model: string, nb_trips: number, total_distance_km: number, average_speed_concat?: string, bilan_concat?: string, average_speed_kmh: number, most_frequent_bilan: string }[]
     rows = rows.map(row => {
         const credibleSpeeds = row?.average_speed_concat?.split(',').map(s => parseFloat(s)).filter(s => s > 5) || []
         row.average_speed_kmh = credibleSpeeds.reduce((acc, cur) => acc + cur, 0) / credibleSpeeds.length

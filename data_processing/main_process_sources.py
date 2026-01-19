@@ -39,9 +39,8 @@ def jsonify(x):
 print("jsonifying coords")
 trips_with_carnet_match["coords"] = trips_with_carnet_match["coords"].apply(jsonify)
 
-print("convert & drop")
+print("convert index")
 trips_with_carnet_match["carnetEntryIndex"] = pd.to_numeric(trips_with_carnet_match["carnetEntryIndex"], errors="coerce").astype("Int64")
-trips_with_carnet_match.drop(columns=["timestamps"], inplace=True)
 
 print("Saving trips_with_carnet_match to database")
 trips_with_carnet_match.to_sql('trips_with_carnet_match', conn, if_exists='replace')
