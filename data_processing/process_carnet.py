@@ -75,6 +75,9 @@ def fix_dates(df):
 def process_carnet(df_trips):
     df_survey = pd.read_csv(os.getenv("SURVEY_OUTPUT_CSV_FILE"), sep=";")
 
+    if df_survey.empty:
+        return df_trips
+
     df_survey = fix_dates(df_survey)
 
     df_survey["carnetEntryIndex"] = df_survey.index

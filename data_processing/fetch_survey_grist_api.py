@@ -9,14 +9,17 @@ def fetch_and_save_survey_data():
 
     data = api.fetch_table(os.getenv("GRIST_TABLE_NAME"))
     df = pd.DataFrame(data)
-
+    
     def create_columns_from_multiple_choice(df, column_name, mapping):
-        dummies = pd.get_dummies(df[column_name].str[1:].explode())
+        if column_name in df.columns:
+            dummies = pd.get_dummies(df[column_name].str[1:].explode())
+            df.drop(columns=[column_name], inplace=True)
+        else:
+            dummies = pd.DataFrame()
         dummies.rename(columns=lambda x: mapping.get(x, x), inplace=True)
         dummies = dummies.reindex(mapping.values(), axis=1, fill_value=False)
         dummies = dummies.groupby(level=0).max()
         df = df.join(dummies)
-        df.drop(columns=[column_name], inplace=True)
         return df
 
     mapping_meteo = {
@@ -54,7 +57,8 @@ def fetch_and_save_survey_data():
     df = create_columns_from_multiple_choice(df, "avantages", mapping_avantages)
     df = create_columns_from_multiple_choice(df, "difficultes", mapping_difficultes)
 
-    df['date'] = df['date'].fillna(0).astype(int)
-    df['date'] = pd.to_datetime(df['date'], unit='s')
+    if "date" in df.columns:
+        df['date'] = df['date'].fillna(0).astype(int)
+        df['date'] = pd.to_datetime(df['date'], unit='s')
 
     df.to_csv(os.getenv("SURVEY_OUTPUT_CSV_FILE"), sep=";")

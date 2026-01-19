@@ -30,6 +30,25 @@ conn = sqlite3.connect(os.getenv("DATAVIZ_DATABASE_FILE")) # Database for the 30
 raw_with_trip_ids.rename(columns={"Latitude (loc)": "Latitude(loc)", "Longitude (loc)": "Longitude(loc)"}, inplace=True)
 raw_with_trip_ids.to_sql('raw_with_trip_ids', conn, if_exists='replace')
 
+# Ensure no columns are missing in trips_with_carnet_match before db creation
+expected_columns = [
+    'UniqueTripID', 'coords', 'TotalDistanceKm', 'StartTime', 'EndTime',
+    'LicencePlate', 'Brand', 'Model', 'DurationHour', 'AvgSpeed',
+    'carnetEntryIndex', 'territoire', 'nom', 'prenom', 'plate',
+    'vehicule', 'date', 'heure_debut', 'heure_fin', 'duree', 'moment',
+    'depart', 'arrivee', 'etape', 'distance', 'passagers', 'motif',
+    'point_noir_1', 'point_noir_2', 'difficultes_details', 'bilan',
+    'commentaires', 'meteo_ensoleille', 'meteo_nuageux', 'meteo_pluvieux',
+    'meteo_venteux', 'meteo_neigeux', 'meteo_brouillard', 'meteo_autre',
+    'avantage_aucun', 'avantage_agilite', 'avantage_confort',
+    'avantage_observation', 'avantage_fierté', 'avantage_reactions',
+    'avantage_bien_etre', 'avantage_autre', 'difficulte_aucune',
+    'difficulte_visibilite', 'difficulte_amenagement',
+    'difficulte_stationnement', 'difficulte_vehicule',
+    'difficulte_comportement', 'difficulte_autre', 'start_time', 'end_time'
+]
+trips_with_carnet_match = trips_with_carnet_match.reindex(columns=expected_columns)
+
 def jsonify(x):
     try:
         return json.dumps(x, allow_nan=False)
@@ -41,6 +60,7 @@ trips_with_carnet_match["coords"] = trips_with_carnet_match["coords"].apply(json
 
 print("convert index")
 trips_with_carnet_match["carnetEntryIndex"] = pd.to_numeric(trips_with_carnet_match["carnetEntryIndex"], errors="coerce").astype("Int64")
+
 
 print("Saving trips_with_carnet_match to database")
 trips_with_carnet_match.to_sql('trips_with_carnet_match', conn, if_exists='replace')
