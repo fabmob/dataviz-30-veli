@@ -73,7 +73,11 @@ def fix_dates(df):
     return df
 
 def process_carnet(df_trips):
-    df_survey = pd.read_csv(os.getenv("SURVEY_OUTPUT_CSV_FILE"), sep=";")
+    try:
+        df_survey = pd.read_csv(os.getenv("SURVEY_OUTPUT_CSV_FILE"), sep=";")
+    except FileNotFoundError:
+        print(f"No survey file found at {os.getenv('SURVEY_OUTPUT_CSV_FILE')}, skipping")
+        return df_trips
 
     if df_survey.empty:
         return df_trips

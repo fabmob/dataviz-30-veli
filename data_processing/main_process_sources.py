@@ -11,8 +11,10 @@ import os
 
 load_dotenv()
 
-print("Fetching remote survey data, using grist API")
-fetch_and_save_survey_data()
+if os.getenv("GRIST_API_KEY"):
+    print("Fetching remote survey data, using grist API")
+    fetch_and_save_survey_data()
+
 print("Fetching recent gps data, using carmoove API")
 fetch_and_save_recent_gps_data()
 
