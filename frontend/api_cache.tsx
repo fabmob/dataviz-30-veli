@@ -56,7 +56,7 @@ const loadCarnet = async (carnetIndex: string) => {
 const loadHeatmapData = async (location: string|null, model: string|null) => {
     if (location === "Tous") location = null
     if (model === "Tous") model = null
-    let jsonFile = "heatmaps/" + (location ? location : 'all')
+    let jsonFile = "/heatmaps/" + (location ? location : 'all')
     jsonFile += '/' + (model ? model : 'all') + '.json'
     const heatmapjson = await (await fetch(jsonFile)).json()
     if (!carnetCache) {
